@@ -1,0 +1,217 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system with African-inspired colors */
+
+@layer base {
+  :root {
+    --background: 48 100% 94%; /* #FFFDD0 - Crème clair standard */
+    --background-alt: 60 100% 97%; /* #FFFFF0 - Ivoire */
+    --background-soft: 60 56% 91%; /* #F5F5DC - Beige clair */
+    --background-warm: 36 68% 95%; /* #FAF3E0 - Crème doux */
+    --background-cream: 44 68% 96%; /* #FDF6E3 - Blanc cassé chaud */
+
+    --card: 60 100% 97%; /* Ivoire */
+    --card-foreground: 30 20% 15%;
+
+    --popover: 60 100% 97%;
+    --popover-foreground: 30 20% 15%;
+
+    --primary: 48 100% 94%; /* Crème clair standard */
+    --primary-foreground: 30 20% 15%;
+
+    --secondary: 60 56% 91%; /* Beige clair */
+    --secondary-foreground: 30 20% 15%;
+
+    --muted: 44 68% 96%; /* Blanc cassé chaud */
+    --muted-foreground: 30 15% 45%;
+
+    --accent: 36 68% 95%; /* Crème doux */
+    --accent-foreground: 30 20% 15%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 60 56% 91%; /* Beige clair */
+    --input: 60 56% 91%;
+    --ring: 48 100% 94%;
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 30 20% 8%;
+    --foreground: 30 10% 95%;
+
+    --card: 30 15% 12%;
+    --card-foreground: 30 10% 95%;
+
+    --popover: 30 15% 12%;
+    --popover-foreground: 30 10% 95%;
+
+    --primary: 44 68% 96%; /* Blanc cassé chaud */
+    --primary-foreground: 30 20% 8%;
+
+    --secondary: 36 68% 95%; /* Crème doux */
+    --secondary-foreground: 30 10% 95%;
+
+    --muted: 60 56% 91%; /* Beige clair */
+    --muted-foreground: 30 10% 65%;
+
+    --accent: 60 100% 97%; /* Ivoire */
+    --accent-foreground: 30 10% 95%;
+
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 36 68% 95%; /* Crème doux */
+    --input: 36 68% 95%;
+    --ring: 44 68% 96%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+/* Creative Typography Styles */
+@layer components {
+  .typography-hero {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .typography-display {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  
+  .typography-heading {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+  
+  .typography-subheading {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+  }
+  
+  .typography-body-large {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    font-size: 1.125rem;
+  }
+  
+  .typography-body {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+  
+  .typography-caption {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    line-height: 1.4;
+    font-size: 0.875rem;
+    letter-spacing: 0.02em;
+  }
+  
+  .typography-accent {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 500;
+  }
+  
+  /* Creative text effects */
+  .text-gradient-primary {
+    background: linear-gradient(135deg, #f97316 0%, #f59e0b 50%, #eab308 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .text-gradient-warm {
+    background: linear-gradient(135deg, #dc2626 0%, #ea580c 50%, #ca8a04 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .text-shadow-soft {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .text-shadow-warm {
+    text-shadow: 0 2px 12px rgba(249, 115, 22, 0.3);
+  }
+}
+
+/* Custom African-inspired patterns and gradients */
+.african-gradient {
+  background: linear-gradient(135deg, #e8b938 0%, #d97654 50%, #3d9940 100%);
+}
+
+.african-gold-gradient {
+  background: linear-gradient(135deg, #f0cf5c 0%, #e8b938 100%);
+}
+
+.african-earth-gradient {
+  background: linear-gradient(135deg, #ca9571 0%, #a96a49 100%);
+}
+
+/* Custom scrollbar with African theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f4ebe1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d19b2b;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ae7c24;
+}
+
+/* African pattern overlay */
+.pattern-overlay {
+  position: relative;
+}
+
+.pattern-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 25% 25%, #d19b2b0a 0%, transparent 70%),
+    radial-gradient(circle at 75% 75%, #d976540a 0%, transparent 70%);
+  pointer-events: none;
+}
