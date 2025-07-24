@@ -55,18 +55,14 @@ const HeroSection = () => {
             {/* Features */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-african-green-100 rounded-full flex items-center justify-center">
-                  <Leaf className="w-5 h-5 text-african-green-600" />
-                </div>
+                
               </div>
               <div className="flex items-center space-x-3">
                   
               </div>
 
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-african-gold-100 rounded-full flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-african-gold-600" />
-                </div>
+               
                 
               </div>
             </div>
