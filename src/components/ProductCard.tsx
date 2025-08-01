@@ -4,6 +4,7 @@ import { Heart, Star, ShoppingCart, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { useCart } from '@/hooks/useCart';
 
 interface ProductCardProps {
   id: string;
@@ -12,7 +13,7 @@ interface ProductCardProps {
   originalPrice?: number;
   rating: number;
   reviewCount: number;
-  image: string;
+  imageUrl: string;
   category: string;
   skinType?: string[];
   isNew?: boolean;
@@ -27,7 +28,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   originalPrice,
   rating,
   reviewCount,
-  image,
+  imageUrl,
   category,
   skinType,
   isNew,
@@ -36,8 +37,24 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const { addItem, isLoading } = useCart();
 
   const discount = originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0;
+
+  const handleAddToCart = async () => {
+    await addItem({
+      item: {
+        id,
+        name,
+        price,
+        image: imageUrl,
+        origin: 'Sénégal',
+        category,
+        available: true
+      },
+      quantity: 1
+    });
+  };
 
   return (
     <Card 
@@ -49,11 +66,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {/* Product image */}
         <div className="aspect-square bg-gradient-to-br from-african-gold-50 to-african-earth-50 relative">
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-32 h-32 bg-gradient-to-br from-african-gold-200 to-african-terracotta-200 rounded-full shadow-lg flex items-center justify-center">
-              <span className="text-2xl font-bold text-african-earth-700">{name.slice(0, 2)}</span>
-            </div>
+                  <img 
+                      src={imageUrl} 
+                      alt={name}
+                      className="object-cover w-full h-full"
+                  />
           </div>
-          
           {/* Overlay buttons */}
           <div className={`absolute inset-0 bg-black/20 flex items-center justify-center space-x-3 transition-opacity duration-300 ${
             isHovered ? 'opacity-100' : 'opacity-0'
@@ -61,7 +79,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <Button size="sm" variant="secondary" className="bg-white/90 hover:bg-white">
               <Eye className="w-4 h-4" />
             </Button>
-            <Button size="sm" className="bg-african-gold-500 hover:bg-african-gold-600">
+            <Button 
+              size="sm" 
+              className="bg-african-gold-500 hover:bg-african-gold-600"
+              onClick={handleAddToCart}
+              disabled={isLoading}
+            >
               <ShoppingCart className="w-4 h-4" />
             </Button>
           </div>
@@ -150,11 +173,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <span className="text-lg font-bold text-african-earth-800">
-              {price}€
+              {price}FCFA
             </span>
             {originalPrice && (
               <span className="text-sm text-african-earth-400 line-through">
-                {originalPrice}€
+                {originalPrice}FCFA
               </span>
             )}
           </div>
@@ -162,8 +185,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <Button 
             size="sm" 
             className="bg-african-gold-500 hover:bg-african-gold-600 text-white"
+            onClick={handleAddToCart}
+            disabled={isLoading}
           >
-            Ajouter
+            {isLoading ? 'Ajout...' : 'Ajouter'}
           </Button>
         </div>
       </CardContent>

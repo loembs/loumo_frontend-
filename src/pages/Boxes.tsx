@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { Package, Heart, Star, Users, Baby, User, Sparkles, ArrowRight, Eye } from 'lucide-react';
+import { Package, Heart, Star, Users, Baby, User, Sparkles, ArrowRight, Eye, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { useCart } from '@/hooks/useCart';
+import CartNotifications from '@/components/CartNotifications';
 
 const Boxes = () => {
   const [selectedType, setSelectedType] = useState('femme');
   const [hoveredBox, setHoveredBox] = useState<string | null>(null);
+  const { addItem, isLoading, error, validationResult } = useCart();
 
   const boxTypes = [
     {
@@ -69,9 +72,30 @@ const Boxes = () => {
 
   const selectedBox = boxTypes.find(box => box.id === selectedType);
 
+  const handleAddToCart = async (box: any) => {
+    await addItem({
+      item: {
+        id: `box-${box.id}`,
+        name: box.name,
+        price: box.price,
+        image: box.image,
+        origin: 'Sénégal',
+        category: 'Box',
+        available: true
+      },
+      quantity: 1
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#FFFDD0] to-[#FDF6E3]">
       <Header />
+      
+      {/* Notifications */}
+      <CartNotifications 
+        validationResult={validationResult}
+        error={error}
+      />
       
       <main className="container mx-auto px-4 py-8">
         {/* Hero Section */}
@@ -239,11 +263,22 @@ const Boxes = () => {
                       className={`bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white transition-all duration-500 ${
                         isHovered ? 'scale-110 shadow-lg translate-y-1' : ''
                       }`}
+                      onClick={() => handleAddToCart(box)}
+                      disabled={isLoading}
                     >
-                      {isHovered ? 'Choisir maintenant' : 'Découvrir'}
-                      <ArrowRight className={`ml-2 h-4 w-4 transition-transform duration-300 ${
-                        isHovered ? 'translate-x-1' : ''
-                      }`} />
+                      {isLoading ? (
+                        <>
+                          <ShoppingCart className="ml-2 h-4 w-4 animate-spin" />
+                          Ajout...
+                        </>
+                      ) : (
+                        <>
+                          {isHovered ? 'Ajouter au panier' : 'Découvrir'}
+                          <ArrowRight className={`ml-2 h-4 w-4 transition-transform duration-300 ${
+                            isHovered ? 'translate-x-1' : ''
+                          }`} />
+                        </>
+                      )}
                     </Button>
                   </CardContent>
                 </Card>
@@ -278,10 +313,21 @@ const Boxes = () => {
                 <Button 
                   size="lg" 
                   className="bg-gradient-to-r from-[#FFFDD0] to-[#FAF3E0] text-gray-800 px-8 py-4 text-lg rounded-2xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-[#F5F5DC] group"
+                  onClick={() => handleAddToCart(selectedBox)}
+                  disabled={isLoading}
                 >
-                  <Heart className="mr-2 h-5 w-5 group-hover:animate-pulse text-[#D2A679]" />
-                  Choisir cette box
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform text-[#D2A679]" />
+                  {isLoading ? (
+                    <>
+                      <ShoppingCart className="mr-2 h-5 w-5 animate-spin text-[#D2A679]" />
+                      Ajout au panier...
+                    </>
+                  ) : (
+                    <>
+                      <Heart className="mr-2 h-5 w-5 group-hover:animate-pulse text-[#D2A679]" />
+                      Ajouter au panier
+                      <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform text-[#D2A679]" />
+                    </>
+                  )}
                 </Button>
               </div>
               
@@ -338,16 +384,6 @@ const Boxes = () => {
       </main>
 
       <Footer />
-      
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-10px) rotate(5deg); }
-        }
-        .perspective-1000 {
-          perspective: 1000px;
-        }
-      `}</style>
     </div>
   );
 };

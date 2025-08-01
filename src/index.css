@@ -215,3 +215,33 @@
     radial-gradient(circle at 75% 75%, #d976540a 0%, transparent 70%);
   pointer-events: none;
 }
+
+/* Cart and Boxes animations */
+@keyframes float {
+  0%, 100% { 
+    transform: translateY(0px) rotate(0deg); 
+  }
+  50% { 
+    transform: translateY(-10px) rotate(5deg); 
+  }
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+/* Cart notification animations */
+@keyframes slide-in-from-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-in {
+  animation: slide-in-from-right 0.3s ease-out;
+}

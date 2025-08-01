@@ -1,29 +1,16 @@
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import ProductCard from './ProductCard';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useProducts } from '@/hooks/useProducts';
 
 const FeaturedProducts = () => {
-  const [featuredProducts, setFeaturedProducts] = useState([]);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch('https://back-lomou.onrender.com/api/product');
-        if (!response.ok) {
-          throw new Error('Failed to fetch products');
-        }
-        const data = await response.json();
-        setFeaturedProducts(data);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      }
-    };
-
-    fetchProducts();
-  }, []);
+  const { products, isLoading, error } = useProducts();
+  
+  // Prendre les 8 premiers produits comme "featured"
+  const featuredProducts = products.slice(0, 8);
 
   return (
     <section className="py-16 bg-white text-[#232323]">
@@ -40,11 +27,30 @@ const FeaturedProducts = () => {
         </div>
 
         {/* Products grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {featuredProducts.map((product) => (
-            <ProductCard key={product.id} {...product} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            {[...Array(8)].map((_, index) => (
+              <div key={index} className="animate-pulse">
+                <div className="bg-gray-200 h-64 rounded-lg mb-4"></div>
+                <div className="bg-gray-200 h-4 rounded mb-2"></div>
+                <div className="bg-gray-200 h-4 rounded w-3/4"></div>
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <p className="text-red-600 mb-4">Erreur lors du chargement des produits</p>
+            <Button onClick={() => window.location.reload()}>
+              Réessayer
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            {featuredProducts.map((product) => (
+              <ProductCard key={product.id} {...product} />
+            ))}
+          </div>
+        )}
 
         {/* CTA */}
         <div className="text-center">
