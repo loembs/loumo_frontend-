@@ -1,8 +1,7 @@
 import { User, AuthResponse } from '@/types/auth';
 
-const API_BASE_URL = import.meta.env.PROD 
-  ? 'https://back-lomou.onrender.com/api/auth'
-  : 'http://localhost:8083/api/auth';
+// Temporairement forcer localhost pour tester
+const API_BASE_URL = 'https://back-lomou.onrender.com/api/auth';
 const IS_PRODUCTION = import.meta.env.PROD;
 
 export class AuthService {
