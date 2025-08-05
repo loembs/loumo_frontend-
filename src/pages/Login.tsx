@@ -1,13 +1,15 @@
 
 import React, { useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Settings } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { RegisterForm } from '@/components/auth/RegisterForm';
 import { useAuth } from '@/hooks/useAuth';
+import { ConnectionTest } from '@/components/ConnectionTest';
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [showDebug, setShowDebug] = useState(false);
   const { login, register, isLoading } = useAuth();
   const navigate = useNavigate();
 
@@ -33,10 +35,19 @@ const Login = () => {
 
       <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-6">
-          <Link to="/" className="inline-flex items-center text-orange-600 hover:text-orange-700 mb-4">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Retour à Loumo
-          </Link>
+          <div className="flex items-center justify-between mb-4">
+            <Link to="/" className="inline-flex items-center text-orange-600 hover:text-orange-700">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Retour à Loumo
+            </Link>
+            <button
+              onClick={() => setShowDebug(!showDebug)}
+              className="inline-flex items-center text-gray-600 hover:text-gray-800"
+              title="Mode débogage"
+            >
+              <Settings className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
         {isLogin ? (
