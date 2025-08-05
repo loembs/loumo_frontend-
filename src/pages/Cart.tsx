@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft, Heart, Truck, Package } from 'lucide-react';
+import React, { useState } from 'react';
+import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft, Heart, Truck, Package, CreditCard } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -9,8 +9,12 @@ import Footer from '@/components/Footer';
 import { useCart } from '@/hooks/useCart';
 import CartNotifications from '@/components/CartNotifications';
 import { CartCalculationService } from '@/services/CartCalculationService';
+import { AuthCheckout } from '@/components/checkout/AuthCheckout';
 
 const Cart = () => {
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState<string | null>(null);
+  
   const {
     cart,
     isLoading,
@@ -43,11 +47,78 @@ const Cart = () => {
     const result = validateCart();
     if (!result.isValid) {
       console.log('Erreurs de validation:', result.errors);
+      return;
     }
+    setShowCheckout(true);
+  };
+
+  const handleCheckoutSuccess = (orderId: string) => {
+    setOrderSuccess(orderId);
+    setShowCheckout(false);
+  };
+
+  const handleBackToCart = () => {
+    setShowCheckout(false);
+    setOrderSuccess(null);
   };
 
   const shippingInfo = getShippingInfo();
   const shippingOptions = getShippingOptions();
+
+  // Afficher le checkout si demandé
+  if (showCheckout) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-orange-50 to-amber-50">
+        <Header />
+        <main className="container mx-auto px-4 py-8">
+          <AuthCheckout onBack={handleBackToCart} onSuccess={handleCheckoutSuccess} />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Afficher le succès de commande
+  if (orderSuccess) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-orange-50 to-amber-50">
+        <Header />
+        <main className="container mx-auto px-4 py-8">
+          <div className="max-w-2xl mx-auto text-center">
+            <Card className="bg-white/90 backdrop-blur-sm border border-green-200">
+              <CardContent className="p-8">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Package className="h-8 w-8 text-green-600" />
+                </div>
+                <h1 className="text-2xl font-bold text-gray-800 mb-2">Commande confirmée !</h1>
+                <p className="text-gray-600 mb-4">
+                  Votre commande a été enregistrée avec succès. Vous recevrez bientôt un email de confirmation.
+                </p>
+                <div className="bg-green-50 p-4 rounded-lg mb-6">
+                  <p className="text-sm text-green-700">
+                    <strong>Numéro de commande :</strong> {orderSuccess}
+                  </p>
+                </div>
+                <div className="space-y-3">
+                  <Link to="/orders">
+                    <Button className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600">
+                      Voir mes commandes
+                    </Button>
+                  </Link>
+                  <Link to="/">
+                    <Button variant="outline" className="w-full">
+                      Continuer mes achats
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-amber-50">
@@ -203,7 +274,12 @@ const Cart = () => {
                     disabled={isLoading}
                     onClick={handleValidateCart}
                   >
-                    {isLoading ? 'Chargement...' : 'Procéder au paiement'}
+                    {isLoading ? 'Chargement...' : (
+                      <>
+                        <CreditCard className="h-5 w-5 mr-2" />
+                        Commander maintenant
+                      </>
+                    )}
                   </Button>
                   
                   <div className="text-center">

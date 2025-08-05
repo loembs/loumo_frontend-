@@ -1,11 +1,12 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Search, User, Heart, Menu, X } from 'lucide-react';
+import { ShoppingCart, Search, User, Heart, Menu, X, Package, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/hooks/useCart';
+import { useAuth } from '@/providers/AuthProvider';
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -18,6 +19,7 @@ import {
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { itemCount } = useCart();
+  const { user, isAuthenticated, logout } = useAuth();
 
   // Nouvelle navigation simplifiée
   const navigation = [
@@ -120,11 +122,52 @@ const Header = () => {
               <Heart className="h-5 w-5" />
             </Button>
             
-            <Link to="/login">
-              <Button variant="ghost" size="sm" className="hover:bg-orange-50 hover:text-orange-600">
-                <User className="h-5 w-5" />
-              </Button>
-            </Link>
+            {/* Liens utilisateur connecté */}
+            {isAuthenticated && user ? (
+              <>
+                {/* Dashboard Admin */}
+                {user.role === 'ADMIN' && (
+                  <Link to="/admin">
+                    <Button variant="ghost" size="sm" className="hover:bg-orange-50 hover:text-orange-600">
+                      <Settings className="h-5 w-5" />
+                    </Button>
+                  </Link>
+                )}
+                
+                {/* Commandes utilisateur */}
+                <Link to="/orders">
+                  <Button variant="ghost" size="sm" className="hover:bg-orange-50 hover:text-orange-600">
+                    <Package className="h-5 w-5" />
+                  </Button>
+                </Link>
+                
+                {/* Menu utilisateur */}
+                <div className="relative group">
+                  <Button variant="ghost" size="sm" className="hover:bg-orange-50 hover:text-orange-600">
+                    <User className="h-5 w-5" />
+                  </Button>
+                  <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-orange-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <div className="py-2">
+                      <div className="px-4 py-2 text-sm text-gray-600 border-b border-orange-100">
+                        {user.firstName} {user.lastName}
+                      </div>
+                      <button
+                        onClick={logout}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
+                      >
+                        Se déconnecter
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <Link to="/login">
+                <Button variant="ghost" size="sm" className="hover:bg-orange-50 hover:text-orange-600">
+                  <User className="h-5 w-5" />
+                </Button>
+              </Link>
+            )}
             
             <Link to="/cart">
               <Button variant="ghost" size="sm" className="relative hover:bg-orange-50 hover:text-orange-600">
@@ -177,6 +220,46 @@ const Header = () => {
                   {item.name}
                 </Link>
               ))}
+              
+              {/* Liens utilisateur connecté - Mobile */}
+              {isAuthenticated && user && (
+                <>
+                  <hr className="border-orange-200" />
+                  <div className="px-4 py-2 text-sm text-gray-500 font-medium">
+                    {user.firstName} {user.lastName}
+                  </div>
+                  
+                  {user.role === 'ADMIN' && (
+                    <Link
+                      to="/admin"
+                      className="typography-body text-gray-700 hover:text-orange-600 font-medium py-3 px-4 rounded-lg hover:bg-orange-50 transition-colors flex items-center gap-2"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <Settings className="h-4 w-4" />
+                      Dashboard Admin
+                    </Link>
+                  )}
+                  
+                  <Link
+                    to="/orders"
+                    className="typography-body text-gray-700 hover:text-orange-600 font-medium py-3 px-4 rounded-lg hover:bg-orange-50 transition-colors flex items-center gap-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <Package className="h-4 w-4" />
+                    Mes commandes
+                  </Link>
+                  
+                  <button
+                    onClick={() => {
+                      logout();
+                      setIsMenuOpen(false);
+                    }}
+                    className="w-full text-left typography-body text-gray-700 hover:text-orange-600 font-medium py-3 px-4 rounded-lg hover:bg-orange-50 transition-colors"
+                  >
+                    Se déconnecter
+                  </button>
+                </>
+              )}
             </div>
           </nav>
         </div>

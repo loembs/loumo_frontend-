@@ -22,7 +22,7 @@ export class ProductCacheService {
         timestamp: Date.now(),
         lastModified: lastModified || Date.now(),
         products,
-        categories: [...new Set(products.map(p => p.category))],
+        categories: [...new Set(products.map(p => typeof p.category === 'string' ? p.category : p.category.name))],
         totalCount: products.length
       };
 
@@ -178,7 +178,7 @@ export class ProductCacheService {
       return cached.products.filter(product => 
         product.name.toLowerCase().includes(lowercaseQuery) ||
         product.description.toLowerCase().includes(lowercaseQuery) ||
-        product.category.toLowerCase().includes(lowercaseQuery)
+        (typeof product.category === 'string' ? product.category : product.category.name).toLowerCase().includes(lowercaseQuery)
       );
     } catch (error) {
       console.error('Erreur lors de la recherche:', error);

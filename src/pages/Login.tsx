@@ -4,7 +4,7 @@ import { ArrowLeft, Settings } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { RegisterForm } from '@/components/auth/RegisterForm';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/providers/AuthProvider';
 import { ConnectionTest } from '@/components/ConnectionTest';
 
 const Login = () => {

@@ -1,8 +1,8 @@
 import { Product, ProductSearchParams } from '@/types/product';
 import { ProductCacheService } from './ProductCacheService';
+import { API_BASE_URL, ENDPOINTS } from '@/config/constants';
 
 export class ProductService {
-  private static readonly API_BASE_URL = 'https://back-lomou.onrender.com/api/product';
 
   static async getProducts(params?: ProductSearchParams): Promise<Product[]> {
     try {
@@ -56,8 +56,7 @@ export class ProductService {
   }
 
   private static async fetchProductsFromAPI(): Promise<Product[]> {
-    // Simulation d'appel API - à remplacer par ton vrai endpoint
-    const response = await fetch(this.API_BASE_URL);
+    const response = await fetch(`${API_BASE_URL}${ENDPOINTS.PRODUCTS.ALL}`);
     if (!response.ok) {
       throw new Error('Erreur lors du chargement des produits');
     }
@@ -75,7 +74,7 @@ export class ProductService {
       filtered = filtered.filter(product =>
         product.name.toLowerCase().includes(query) ||
         product.description.toLowerCase().includes(query) ||
-        product.category.toLowerCase().includes(query)
+        (typeof product.category === 'string' ? product.category : product.category.name).toLowerCase().includes(query)
       );
     }
 
