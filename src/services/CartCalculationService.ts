@@ -1,10 +1,10 @@
 import { Cart, CartItem } from '@/types/cart';
 
 export class CartCalculationService {
-  private static readonly FREE_SHIPPING_THRESHOLD = 50;
-  private static readonly STANDARD_SHIPPING_COST = 6.90;
-  private static readonly EXPRESS_SHIPPING_COST = 12.90;
-  private static readonly INTERNATIONAL_SHIPPING_COST = 25.90;
+  private static readonly FREE_SHIPPING_THRESHOLD = 10000; // 10.000 FCFA
+  private static readonly STANDARD_SHIPPING_COST = 1500; // 1.500 FCFA
+  private static readonly EXPRESS_SHIPPING_COST = 3000; // 3.000 FCFA
+  private static readonly INTERNATIONAL_SHIPPING_COST = 8000; // 8.000 FCFA
 
   static calculateSubtotal(items: CartItem[]): number {
     return items.reduce((sum, item) => {

@@ -95,7 +95,7 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({ onBack, onSuccess })
     const paymentData: PaymentInfo = {
       method: paymentMethod,
       amount: cart.total,
-      currency: 'EUR',
+      currency: 'XOF',
       cardInfo: paymentMethod === 'card' ? {
         number: paymentInfo.cardNumber,
         expiryDate: paymentInfo.expiryDate,

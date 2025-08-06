@@ -59,8 +59,8 @@ export const APP_CONFIG = {
   NAME: 'LOUMO',
   DESCRIPTION: 'Boubous • Bijoux • Prêt-à-porter',
   VERSION: '1.0.0',
-  CURRENCY: 'EUR',
-  CURRENCY_SYMBOL: '€'
+  CURRENCY: 'XOF',
+  CURRENCY_SYMBOL: 'FCFA'
 };
 
 // Configuration du cache

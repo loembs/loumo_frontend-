@@ -17,13 +17,37 @@ export class ProductCacheService {
 
   static saveProducts(products: Product[], lastModified?: number): void {
     try {
+      // Valider et nettoyer les données avant sauvegarde
+      const validProducts = products.filter(product => {
+        if (!product || typeof product !== 'object') {
+          console.warn('Produit invalide ignoré:', product);
+          return false;
+        }
+        return true;
+      });
+
       const cacheData: CachedProductData = {
         version: this.CACHE_VERSION,
         timestamp: Date.now(),
         lastModified: lastModified || Date.now(),
-        products,
-        categories: [...new Set(products.map(p => typeof p.category === 'string' ? p.category : p.category.name))],
-        totalCount: products.length
+        products: validProducts,
+        categories: [...new Set(validProducts.map(p => {
+          try {
+            if (!p.category) {
+              return 'Autre';
+            } else if (typeof p.category === 'string') {
+              return p.category;
+            } else if (p.category && typeof p.category === 'object' && p.category.name) {
+              return p.category.name;
+            } else {
+              return 'Autre'; // Catégorie par défaut
+            }
+          } catch (error) {
+            console.warn('Erreur lors du traitement de la catégorie:', error);
+            return 'Autre';
+          }
+        }).filter(Boolean))],
+        totalCount: validProducts.length
       };
 
       localStorage.setItem(this.CACHE_KEY, JSON.stringify(cacheData));

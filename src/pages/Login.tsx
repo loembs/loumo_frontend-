@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { RegisterForm } from '@/components/auth/RegisterForm';
 import { useAuth } from '@/providers/AuthProvider';
-import { ConnectionTest } from '@/components/ConnectionTest';
+import { SimpleBackendTest } from '@/components/SimpleBackendTest';
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -50,7 +50,9 @@ const Login = () => {
           </div>
         </div>
 
-        {isLogin ? (
+        {showDebug ? (
+          <SimpleBackendTest />
+        ) : isLogin ? (
           <LoginForm
             onLogin={handleLogin}
             onSwitchToRegister={() => setIsLogin(false)}

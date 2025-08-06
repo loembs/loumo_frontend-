@@ -12,9 +12,26 @@ export class WebSocketService {
   connect(): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
+        // Vérifier si le navigateur supporte WebSocket
+        if (typeof WebSocket === 'undefined') {
+          console.warn('⚠️ WebSocket non supporté par le navigateur');
+          resolve(); // Résoudre sans erreur pour ne pas bloquer l'app
+          return;
+        }
+
         this.socket = new WebSocket(this.url);
         
+        // Timeout pour éviter les blocages
+        const timeout = setTimeout(() => {
+          if (this.socket && this.socket.readyState !== WebSocket.OPEN) {
+            console.warn('⚠️ Timeout de connexion WebSocket');
+            this.socket.close();
+            resolve(); // Résoudre sans erreur
+          }
+        }, 5000);
+        
         this.socket.onopen = () => {
+          clearTimeout(timeout);
           console.log('🔌 WebSocket connecté');
           this.reconnectAttempts = 0;
           resolve();
@@ -24,19 +41,25 @@ export class WebSocketService {
           this.handleMessage(event.data);
         };
 
-        this.socket.onclose = () => {
-          console.log('🔌 WebSocket déconnecté');
-          this.handleReconnect();
+        this.socket.onclose = (event) => {
+          clearTimeout(timeout);
+          console.log('🔌 WebSocket déconnecté', event.code, event.reason);
+          // Ne pas essayer de se reconnecter si c'est une fermeture normale
+          if (event.code !== 1000) {
+            this.handleReconnect();
+          }
         };
 
         this.socket.onerror = (error) => {
+          clearTimeout(timeout);
           console.error('❌ Erreur WebSocket:', error);
-          reject(error);
+          // Ne pas rejeter, juste logger l'erreur
+          resolve();
         };
 
       } catch (error) {
         console.error('❌ Erreur de connexion WebSocket:', error);
-        reject(error);
+        resolve(); // Résoudre sans erreur pour ne pas bloquer l'app
       }
     });
   }

@@ -39,14 +39,23 @@ export class AuthService {
 
   // Fonction pour tester la connectivité
   async testConnection(): Promise<boolean> {
+    let timeoutId: NodeJS.Timeout | undefined;
     try {
-      this.secureLog('🔍 Test de connectivité vers le backend...');
+      this.secureLog(' Test de connectivité vers le backend...');
+      
+      // Utiliser un timeout pour éviter les blocages
+      const controller = new AbortController();
+      timeoutId = setTimeout(() => controller.abort(), 10000); // 10 secondes
+      
       const response = await fetch(`${API_BASE_URL}/me`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
+        signal: controller.signal,
       });
+      
+      if (timeoutId) clearTimeout(timeoutId);
       
       this.secureLog('📡 Réponse du serveur:', {
         status: response.status,
@@ -54,8 +63,10 @@ export class AuthService {
         url: `${API_BASE_URL}/me`
       });
       
+      // Considérer comme connecté si on reçoit une réponse (même 401/403)
       return response.status !== 404;
     } catch (error) {
+      if (timeoutId) clearTimeout(timeoutId);
       this.secureLog('❌ Erreur de connectivité:', { error: error.message });
       return false;
     }
@@ -69,7 +80,7 @@ export class AuthService {
     phone?: string;
     address?: string;
   }): Promise<AuthResponse> {
-    this.secureLog('🔐 Tentative d\'inscription:', userData);
+    this.secureLog('Tentative d\'inscription:', userData);
     
     try {
       // Test de connectivité avant l'inscription
@@ -135,14 +146,31 @@ export class AuthService {
         throw new Error('Impossible de se connecter au serveur. Vérifiez votre connexion internet.');
       }
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 secondes
+      
+      const requestBody = { email, password };
+      this.secureLog('📤 Envoi de la requête de connexion:', {
+        url: `${API_BASE_URL}/login`,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: requestBody
+      });
+
       const response = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(requestBody),
+        signal: controller.signal,
       });
+      
+      clearTimeout(timeoutId);
 
       this.secureLog('📡 Réponse du serveur (login):', {
         status: response.status,
@@ -156,15 +184,26 @@ export class AuthService {
         this.secureLog('❌ Échec de connexion:', {
           status: response.status,
           statusText: response.statusText,
-          error: errorText
+          error: errorText,
+          requestBody: { email, password: '***' }
         });
         
-        if (response.status === 403) {
+        if (response.status === 400) {
+          // Essayer de parser le message d'erreur du backend
+          try {
+            const errorData = JSON.parse(errorText);
+            throw new Error(errorData.message || 'Email ou mot de passe incorrect');
+          } catch {
+            // Si on ne peut pas parser le JSON, afficher le texte brut
+            console.error('Réponse brute du serveur:', errorText);
+            throw new Error(`Erreur 400: ${errorText || 'Email ou mot de passe incorrect'}`);
+          }
+        } else if (response.status === 403) {
           throw new Error('Accès interdit. Problème de configuration CORS ou de sécurité.');
         } else if (response.status === 404) {
           throw new Error('Endpoint de connexion non trouvé. Vérifiez la configuration du serveur.');
         } else {
-          throw new Error('Email ou mot de passe incorrect');
+          throw new Error(`Erreur ${response.status}: ${response.statusText}`);
         }
       }
 
@@ -196,9 +235,19 @@ export class AuthService {
         this.currentUser = data;
         this.secureLog('👤 Utilisateur récupéré:', data);
         return data;
+      } else {
+        this.secureLog('❌ Erreur lors de la récupération de l\'utilisateur:', {
+          status: response.status,
+          statusText: response.statusText
+        });
+        
+        // Si le token est invalide, le supprimer
+        if (response.status === 400 || response.status === 401) {
+          this.logout();
+        }
       }
     } catch (error) {
-      this.secureLog('❌ Erreur lors de la récupération de l\'utilisateur');
+      this.secureLog('❌ Erreur réseau lors de la récupération de l\'utilisateur:', error);
     }
 
     return null;

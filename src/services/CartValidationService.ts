@@ -3,8 +3,8 @@ import { CartItem, CartValidationResult } from '@/types/cart';
 export class CartValidationService {
   private static readonly MAX_QUANTITY_PER_ITEM = 10;
   private static readonly MAX_ITEMS_IN_CART = 50;
-  private static readonly MIN_ORDER_AMOUNT = 5;
-  private static readonly MAX_ORDER_AMOUNT = 10000;
+  private static readonly MIN_ORDER_AMOUNT = 1000; // 1.000 FCFA
+  private static readonly MAX_ORDER_AMOUNT = 500000; // 500.000 FCFA
 
   static validateAddItem(item: Omit<CartItem, 'quantity'>, quantity: number, currentItems: CartItem[]): CartValidationResult {
     const errors: string[] = [];
@@ -100,12 +100,12 @@ export class CartValidationService {
 
     // Validation du montant minimum
     if (cart.subtotal < this.MIN_ORDER_AMOUNT) {
-      errors.push(`Le montant minimum de commande est de ${this.MIN_ORDER_AMOUNT}€`);
+      errors.push(`Le montant minimum de commande est de ${this.MIN_ORDER_AMOUNT} FCFA`);
     }
 
     // Validation du montant maximum
     if (cart.subtotal > this.MAX_ORDER_AMOUNT) {
-      errors.push(`Le montant maximum de commande est de ${this.MAX_ORDER_AMOUNT}€`);
+      errors.push(`Le montant maximum de commande est de ${this.MAX_ORDER_AMOUNT} FCFA`);
     }
 
     // Validation des articles indisponibles
@@ -119,7 +119,7 @@ export class CartValidationService {
       warnings.push('Votre panier est vide');
     }
 
-    if (cart.subtotal > 1000) {
+    if (cart.subtotal > 50000) { // 50.000 FCFA
       warnings.push('Commande importante détectée. Contactez-nous pour des options de livraison spéciales.');
     }
 

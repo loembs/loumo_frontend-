@@ -46,36 +46,34 @@ export const useProducts = (params?: ProductSearchParams) => {
     setCacheInfo(ProductService.getCacheInfo());
   }, []);
 
-  // WebSocket listeners
+  // Charger les produits au démarrage
   useEffect(() => {
-    const handleProductUpdate = (message: any) => {
-      console.log('🔄 Mise à jour produit reçue:', message);
-      // Actualiser automatiquement les produits
-      refreshProducts();
-    };
-
-    const handleCacheInvalidate = () => {
-      console.log('🔄 Invalidation cache reçue');
-      // Vider le cache et recharger
-      clearCache();
-      loadProducts();
-    };
-
-    // Connecter WebSocket
-    webSocketService.connect().then(() => {
-      webSocketService.subscribe('productUpdate', handleProductUpdate);
-      webSocketService.subscribe('cacheInvalidate', handleCacheInvalidate);
-    }).catch(console.error);
-
-    // Charger les produits au démarrage
     loadProducts();
+  }, [loadProducts]);
 
-    // Cleanup
-    return () => {
-      webSocketService.unsubscribe('productUpdate', handleProductUpdate);
-      webSocketService.unsubscribe('cacheInvalidate', handleCacheInvalidate);
-    };
-  }, [loadProducts, refreshProducts, clearCache]);
+  // WebSocket temporairement désactivé (erreur 405)
+  // useEffect(() => {
+  //   const handleProductUpdate = (message: any) => {
+  //     console.log('🔄 Mise à jour produit reçue:', message);
+  //     refreshProducts();
+  //   };
+
+  //   const handleCacheInvalidate = () => {
+  //     console.log('🔄 Invalidation cache reçue');
+  //     clearCache();
+  //     loadProducts();
+  //   };
+
+  //   webSocketService.connect().then(() => {
+  //     webSocketService.subscribe('productUpdate', handleProductUpdate);
+  //     webSocketService.subscribe('cacheInvalidate', handleCacheInvalidate);
+  //   }).catch(console.error);
+
+  //   return () => {
+  //     webSocketService.unsubscribe('productUpdate', handleProductUpdate);
+  //     webSocketService.unsubscribe('cacheInvalidate', handleCacheInvalidate);
+  //   };
+  // }, [loadProducts, refreshProducts, clearCache]);
 
   return {
     products,

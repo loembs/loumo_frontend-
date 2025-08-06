@@ -233,10 +233,10 @@ const Boxes = () => {
                       <span className={`typography-heading text-2xl font-bold text-orange-600 transition-all duration-300 ${
                         isHovered ? 'scale-110 text-orange-500' : ''
                       }`}>
-                        {box.price}€
+                        {box.price} FCFA
                       </span>
                       <span className="typography-body text-gray-400 line-through">
-                        {box.originalPrice}€
+                        {box.originalPrice} FCFA
                       </span>
                       <span className="typography-caption text-sm bg-green-100 text-green-700 px-2 py-1 rounded-full">
                         /mois
