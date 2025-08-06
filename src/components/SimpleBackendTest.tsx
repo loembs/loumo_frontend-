@@ -72,8 +72,8 @@ export const SimpleBackendTest: React.FC = () => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            email: 'client@loumo.com',
-            password: 'password123'
+            email: 'admin@loumo.com',
+            password: 'admin123'
           })
         });
         
