@@ -74,33 +74,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(true);
       const response = await authService.login(email, password);
       
-      if (response) {
-        // Stocker le token et les données utilisateur
-        localStorage.setItem('auth_token', response.token);
-        localStorage.setItem('user_data', JSON.stringify({
-          id: response.id,
-          email: response.email,
-          firstName: response.firstName,
-          lastName: response.lastName,
-          role: response.role,
-          avatar: response.avatar
-        }));
-        
-        setUser({
-          id: response.id,
-          email: response.email,
-          firstName: response.firstName,
-          lastName: response.lastName,
-          role: response.role,
-          avatar: response.avatar
-        });
-        
-        return true;
-      }
-      return false;
+      // Stocker le token et les données utilisateur
+      localStorage.setItem('auth_token', response.token);
+      localStorage.setItem('user_data', JSON.stringify({
+        id: response.id,
+        email: response.email,
+        firstName: response.firstName,
+        lastName: response.lastName,
+        role: response.role,
+        avatar: response.avatar
+      }));
+      
+      setUser({
+        id: response.id,
+        email: response.email,
+        firstName: response.firstName,
+        lastName: response.lastName,
+        role: response.role,
+        avatar: response.avatar
+      });
+      
+      return true;
     } catch (error) {
       console.error('Erreur de connexion:', error);
-      return false;
+      // Propager l'erreur au lieu de retourner false
+      throw error;
     } finally {
       setIsLoading(false);
     }
