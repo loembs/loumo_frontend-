@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { ArrowLeft, Settings } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { RegisterForm } from '@/components/auth/RegisterForm';
 import { useAuth } from '@/providers/AuthProvider';
@@ -12,15 +12,28 @@ const Login = () => {
   const [showDebug, setShowDebug] = useState(false);
   const { login, register, isLoading } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const handleLogin = async (email: string, password: string) => {
     await login(email, password);
-    navigate('/'); // Rediriger vers la page d'accueil après connexion
+    // Récupérer le paramètre redirect de l'URL
+    const redirectTo = searchParams.get('redirect');
+    if (redirectTo) {
+      navigate(redirectTo);
+    } else {
+      navigate('/'); // Rediriger vers la page d'accueil par défaut
+    }
   };
 
   const handleRegister = async (userData: any) => {
     await register(userData);
-    navigate('/'); // Rediriger vers la page d'accueil après inscription
+    // Récupérer le paramètre redirect de l'URL
+    const redirectTo = searchParams.get('redirect');
+    if (redirectTo) {
+      navigate(redirectTo);
+    } else {
+      navigate('/'); // Rediriger vers la page d'accueil par défaut
+    }
   };
 
   return (
