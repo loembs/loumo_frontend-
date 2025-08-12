@@ -1,73 +1,97 @@
-# Welcome to your Lovable project
+# Natura Afrika - Boutique de Beauté Naturelle
 
-## Project info
+## À propos du projet
 
-**URL**: https://lovable.dev/projects/7698c346-69e6-4bf2-8e0d-58714a99dac5
+Natura Afrika est une boutique en ligne spécialisée dans les produits de beauté naturels made in Africa. Notre plateforme propose des soins visage, cheveux et des box personnalisées avec des ingrédients authentiques africains.
 
-## How can I edit this code?
+## Technologies utilisées
 
-There are several ways of editing your application.
+Ce projet est construit avec :
 
-**Use Lovable**
+- **Vite** - Outil de build rapide
+- **TypeScript** - Typage statique
+- **React** - Bibliothèque UI
+- **shadcn-ui** - Composants UI modernes
+- **Tailwind CSS** - Framework CSS utilitaire
+- **React Router** - Navigation
+- **React Query** - Gestion d'état serveur
+- **Sonner** - Notifications toast
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/7698c346-69e6-4bf2-8e0d-58714a99dac5) and start prompting.
+## Installation et développement
 
-Changes made via Lovable will be committed automatically to this repo.
+### Prérequis
 
-**Use your preferred IDE**
+- Node.js (version 18 ou supérieure)
+- npm ou yarn
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+### Installation
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# 1. Cloner le repository
+git clone <URL_DU_REPO>
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# 2. Naviguer vers le répertoire du projet
+cd afro-boutique
 
-# Step 3: Install the necessary dependencies.
-npm i
+# 3. Installer les dépendances
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# 4. Démarrer le serveur de développement
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Le serveur de développement sera accessible à l'adresse `http://localhost:8080`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Scripts disponibles
 
-**Use GitHub Codespaces**
+- `npm run dev` - Démarre le serveur de développement
+- `npm run build` - Construit l'application pour la production
+- `npm run build:dev` - Construit l'application en mode développement
+- `npm run lint` - Lance l'analyseur de code
+- `npm run preview` - Prévisualise la build de production
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Structure du projet
 
-## What technologies are used for this project?
+```
+src/
+├── components/     # Composants React
+│   ├── admin/     # Interface d'administration
+│   ├── auth/      # Authentification
+│   ├── client/    # Interface client
+│   └── ui/        # Composants UI réutilisables
+├── pages/         # Pages de l'application
+├── services/      # Services API
+├── hooks/         # Hooks personnalisés
+├── types/         # Définitions TypeScript
+└── providers/     # Providers React
+```
 
-This project is built with:
+## Fonctionnalités
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **Catalogue de produits** - Navigation et recherche de produits
+- **Panier d'achat** - Gestion du panier avec persistance
+- **Authentification** - Inscription et connexion utilisateur
+- **Commandes** - Suivi des commandes et historique
+- **Interface admin** - Gestion des produits et commandes
+- **Support client** - Système de support intégré
 
-## How can I deploy this project?
+## Déploiement
 
-Simply open [Lovable](https://lovable.dev/projects/7698c346-69e6-4bf2-8e0d-58714a99dac5) and click on Share -> Publish.
+Le projet peut être déployé sur n'importe quelle plateforme supportant les applications React statiques :
 
-## Can I connect a custom domain to my Lovable project?
+- Vercel
+- Netlify
+- GitHub Pages
+- AWS S3 + CloudFront
 
-Yes, you can!
+## Contribution
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+1. Fork le projet
+2. Créer une branche pour votre fonctionnalité
+3. Commiter vos changements
+4. Pousser vers la branche
+5. Ouvrir une Pull Request
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## Licence
+
+Ce projet est sous licence MIT.
