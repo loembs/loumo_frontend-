@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -12,9 +12,16 @@ import {
   Truck,
   CheckCircle,
   AlertCircle,
-  Clock
+  Clock,
+  MessageCircle,
+  Download,
+  Search
 } from 'lucide-react';
 import { orderService, Order } from '@/services/OrderService';
+import { orderActionsService } from '@/services/OrderActionsService';
+import { toast } from 'sonner';
+import { SupportModal } from './SupportModal';
+import { TrackingModal } from './TrackingModal';
 
 interface ClientOrderDetailsProps {
   order: Order;
@@ -25,6 +32,33 @@ export const ClientOrderDetails: React.FC<ClientOrderDetailsProps> = ({
   order,
   onBack
 }) => {
+  const [isLoading, setIsLoading] = useState({
+    support: false,
+    invoice: false,
+    tracking: false
+  });
+  const [showSupportModal, setShowSupportModal] = useState(false);
+  const [showTrackingModal, setShowTrackingModal] = useState(false);
+
+  const handleContactSupport = async () => {
+    setShowSupportModal(true);
+  };
+
+  const handleDownloadInvoice = async () => {
+    setIsLoading(prev => ({ ...prev, invoice: true }));
+    try {
+      await orderActionsService.downloadInvoice(order);
+      toast.success('Facture téléchargée avec succès');
+    } catch (error) {
+      toast.error('Erreur lors du téléchargement de la facture');
+    } finally {
+      setIsLoading(prev => ({ ...prev, invoice: false }));
+    }
+  };
+
+  const handleTrackPackage = async () => {
+    setShowTrackingModal(true);
+  };
   const getStatusIcon = (status: Order['status']) => {
     switch (status) {
       case 'PENDING':
@@ -220,13 +254,29 @@ export const ClientOrderDetails: React.FC<ClientOrderDetailsProps> = ({
               <CardTitle>Besoin d'aide ?</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <Button className="w-full" variant="outline">
+              <Button 
+                className="w-full" 
+                variant="outline" 
+                onClick={handleContactSupport}
+              >
+                <MessageCircle className="h-4 w-4 mr-2" />
                 Contacter le support
               </Button>
-              <Button className="w-full" variant="outline">
-                Télécharger la facture
+              <Button 
+                className="w-full" 
+                variant="outline" 
+                onClick={handleDownloadInvoice}
+                disabled={isLoading.invoice}
+              >
+                <Download className="h-4 w-4 mr-2" />
+                {isLoading.invoice ? 'Téléchargement...' : 'Télécharger la facture'}
               </Button>
-              <Button className="w-full" variant="outline">
+              <Button 
+                className="w-full" 
+                variant="outline" 
+                onClick={handleTrackPackage}
+              >
+                <Search className="h-4 w-4 mr-2" />
                 Suivre le colis
               </Button>
             </CardContent>
@@ -313,6 +363,20 @@ export const ClientOrderDetails: React.FC<ClientOrderDetailsProps> = ({
           </div>
         </CardContent>
       </Card>
+
+      {/* Modal de support */}
+      <SupportModal
+        isOpen={showSupportModal}
+        onClose={() => setShowSupportModal(false)}
+        orderNumber={order.orderNumber}
+      />
+
+      {/* Modal de suivi */}
+      <TrackingModal
+        isOpen={showTrackingModal}
+        onClose={() => setShowTrackingModal(false)}
+        order={order}
+      />
     </div>
   );
 }; 

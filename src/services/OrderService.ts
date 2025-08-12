@@ -22,6 +22,7 @@ export interface Order {
   customerName: string;
   customerEmail: string;
   notes?: string;
+  trackingNumber?: string;
   items: OrderItem[];
 }
 
