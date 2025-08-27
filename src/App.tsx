@@ -10,6 +10,8 @@ import Tutorials from "./pages/Tutorials";
 import Login from "./pages/Login";
 import Cart from "./pages/Cart";
 import NotFound from "./pages/NotFound";
+import { Marketplace } from "./pages/Marketplace";
+import { CreateShop } from "./pages/CreateShop";
 import { AdminDashboard } from "./components/admin/AdminDashboard";
 import { ClientOrders } from "./components/client/ClientOrders";
 import { AuthProvider } from "./providers/AuthProvider";
@@ -46,6 +48,8 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/products" element={<Index />} />
+              <Route path="/marketplace" element={<Marketplace />} />
+              <Route path="/create-shop" element={<CreateShop />} />
               <Route path="/boxes" element={<Boxes />} />
               <Route path="/tutorials" element={<Tutorials />} />
               <Route path="/about" element={<Index />} />
