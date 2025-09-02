@@ -25,18 +25,17 @@ const Header = () => {
   const navigation = [
     { name: 'Accueil', href: '/' },
     { name: 'Loumo Box', href: '/boxes' },
-    { name: 'Tutos', href: '/tutorials' },
     { name: 'À propos', href: '/about' }
   ];
 
   return (
     <header className="bg-[#F8F5EC]/90 backdrop-blur-sm shadow-lg sticky top-0 z-50 border-b border-[#F8F5EC]">
       {/* Top banner */}
-      <div className="bg-[#D4A373] text-gray-700 py-2">
+      {/* <div className="bg-[#D4A373] text-gray-700 py-2">
         <div className="container mx-auto px-4 text-center typography-caption">
           ✨ Sélection & Confection d’articles 100% made in Africa • Du Sénégal vers le Monde ✨
         </div>
-      </div>
+      </div> */}
 
       {/* Main header */}
       <div className="container mx-auto px-4">
@@ -55,7 +54,6 @@ const Header = () => {
               <h1 className="typography-display text-2xl text-[#D4A373]">
                 LOUMO
               </h1>
-              <p className="typography-caption text-gray-600 -mt-1">Boubous • Bijoux • Prêt-à-porter</p>
             </div>
           </Link>
 

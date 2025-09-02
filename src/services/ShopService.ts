@@ -3,7 +3,7 @@ import { API_BASE_URL } from '@/config/constants';
 
 export class ShopService {
   private static instance: ShopService;
-  private baseUrl = `${API_BASE_URL}/api/shops`;
+  private baseUrl = `${API_BASE_URL}/shops`;
 
   static getInstance(): ShopService {
     if (!ShopService.instance) {
@@ -20,18 +20,48 @@ export class ShopService {
       ...options?.headers,
     };
 
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
-      ...options,
-      headers,
-    });
+    try {
+      const response = await fetch(`${this.baseUrl}${endpoint}`, {
+        ...options,
+        headers,
+      });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Erreur lors de la requête');
+      if (!response.ok) {
+        // Gestion spéciale des erreurs d'authentification
+        if (response.status === 401 || response.status === 403) {
+          console.log('🔐 Erreur d\'authentification détectée');
+          
+          // Supprimer le token invalide
+          localStorage.removeItem('token');
+          
+          // Créer un événement personnalisé pour informer l'application
+          const authErrorEvent = new CustomEvent('authError', {
+            detail: {
+              message: 'Veuillez vous connecter pour accéder à cette fonctionnalité',
+              redirectTo: '/login'
+            }
+          });
+          window.dispatchEvent(authErrorEvent);
+          
+          throw new Error('Authentification requise');
+        }
+        
+        const error = await response.json();
+        throw new Error(error.message || 'Erreur lors de la requête');
+      }
+
+      const data = await response.json();
+      return data.data;
+    } catch (error) {
+      // Si c'est une erreur d'authentification, la relancer
+      if (error instanceof Error && error.message === 'Authentification requise') {
+        throw error;
+      }
+      
+      // Pour les autres erreurs, les gérer normalement
+      console.error('❌ Erreur lors de la requête:', error);
+      throw error;
     }
-
-    const data = await response.json();
-    return data.data;
   }
 
   // Créer une nouvelle boutique

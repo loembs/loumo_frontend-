@@ -18,7 +18,23 @@ export const useProducts = (params?: ProductSearchParams) => {
       setProducts(data);
       setCacheInfo(ProductService.getCacheInfo());
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erreur lors du chargement des produits';
+      console.error('❌ Erreur dans useProducts:', err);
+      
+      let errorMessage = 'Erreur lors du chargement des produits';
+      
+      if (err instanceof Error) {
+        // Messages d'erreur plus spécifiques
+        if (err.message.includes('Failed to fetch') || err.message.includes('CORS')) {
+          errorMessage = 'Problème de connexion au serveur. Vérifiez votre connexion internet.';
+        } else if (err.message.includes('503') || err.message.includes('indisponible')) {
+          errorMessage = 'Le serveur est temporairement indisponible. Veuillez réessayer plus tard.';
+        } else if (err.message.includes('timeout') || err.message.includes('délai')) {
+          errorMessage = 'Le serveur met trop de temps à répondre. Veuillez réessayer.';
+        } else {
+          errorMessage = err.message;
+        }
+      }
+      
       setError(errorMessage);
     } finally {
       setIsLoading(false);

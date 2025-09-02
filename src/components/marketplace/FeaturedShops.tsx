@@ -2,8 +2,72 @@ import React, { useState, useEffect } from 'react';
 import { ShopCard } from './ShopCard';
 import { Shop } from '@/types/shop';
 import { shopService } from '@/services/ShopService';
-import { Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Loader2, ChevronLeft, ChevronRight, Store } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
+// Données de démonstration pour les boutiques mises en avant
+const demoFeaturedShops: Shop[] = [
+  {
+    id: 1,
+    name: "Artisanat Traditionnel Sénégalais",
+    slug: "artisanat-traditionnel-senegalais",
+    description: "Découvrez nos créations artisanales authentiques du Sénégal, des bijoux traditionnels aux objets de décoration.",
+    logoUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=200&fit=crop",
+    bannerUrl: "",
+    contactEmail: "contact@artisanat-senegal.com",
+    contactPhone: "+221 77 123 45 67",
+    address: "123 Rue de l'Artisanat",
+    city: "Dakar",
+    country: "Sénégal",
+    status: "ACTIVE" as any,
+    isVerified: true,
+    isFeatured: true,
+    rating: 4.8,
+    totalReviews: 156,
+    totalSales: 234,
+    createdAt: "2024-01-15",
+    updatedAt: "2024-01-15",
+    owner: {
+      id: 1,
+      email: "artisan@example.com",
+      firstName: "Mamadou",
+      lastName: "Diallo",
+      role: "SHOP_OWNER"
+    },
+    productCount: 45,
+    featuredProducts: []
+  },
+  {
+    id: 3,
+    name: "Mode Africaine Contemporaine",
+    slug: "mode-africaine-contemporaine",
+    description: "Vêtements modernes inspirés de la culture africaine, alliant tradition et contemporanéité.",
+    logoUrl: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300&h=200&fit=crop",
+    bannerUrl: "",
+    contactEmail: "contact@mode-africaine.com",
+    contactPhone: "+221 77 555 44 33",
+    address: "789 Boulevard de la Mode",
+    city: "Dakar",
+    country: "Sénégal",
+    status: "ACTIVE" as any,
+    isVerified: false,
+    isFeatured: true,
+    rating: 4.7,
+    totalReviews: 203,
+    totalSales: 445,
+    createdAt: "2024-03-10",
+    updatedAt: "2024-03-10",
+    owner: {
+      id: 3,
+      email: "mode@example.com",
+      firstName: "Aissatou",
+      lastName: "Ba",
+      role: "SHOP_OWNER"
+    },
+    productCount: 78,
+    featuredProducts: []
+  }
+];
 
 export const FeaturedShops: React.FC = () => {
   const [featuredShops, setFeaturedShops] = useState<Shop[]>([]);
@@ -17,10 +81,20 @@ export const FeaturedShops: React.FC = () => {
   const loadFeaturedShops = async () => {
     try {
       setIsLoading(true);
-      const shops = await shopService.getFeaturedShops();
-      setFeaturedShops(shops);
+      
+      // Essayer d'abord l'API, puis utiliser les données de démonstration en fallback
+      try {
+        console.log('🔄 Tentative de chargement des boutiques mises en avant depuis l\'API...');
+        const shops = await shopService.getFeaturedShops();
+        setFeaturedShops(shops);
+        console.log('✅ Boutiques mises en avant chargées depuis l\'API:', shops.length);
+      } catch (error) {
+        console.log('⚠️ Impossible de charger les boutiques mises en avant depuis l\'API, utilisation des données de démonstration');
+        setFeaturedShops(demoFeaturedShops);
+      }
     } catch (error) {
-      console.error('Erreur lors du chargement des boutiques mises en avant:', error);
+      console.error('❌ Erreur lors du chargement des boutiques mises en avant:', error);
+      setFeaturedShops(demoFeaturedShops);
     } finally {
       setIsLoading(false);
     }
@@ -50,7 +124,20 @@ export const FeaturedShops: React.FC = () => {
   if (featuredShops.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Aucune boutique mise en avant pour le moment.</p>
+        <div className="bg-white rounded-lg p-8 shadow-sm max-w-md mx-auto">
+          <Store className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-700 mb-2">Aucune boutique mise en avant</h3>
+          <p className="text-gray-500 mb-4">
+            Les boutiques mises en avant apparaîtront ici. Revenez bientôt !
+          </p>
+          <Button 
+            variant="outline" 
+            onClick={() => window.location.reload()}
+            className="text-orange-600 border-orange-200 hover:bg-orange-50"
+          >
+            Actualiser
+          </Button>
+        </div>
       </div>
     );
   }

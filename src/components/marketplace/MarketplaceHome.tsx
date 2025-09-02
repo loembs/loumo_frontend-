@@ -4,7 +4,101 @@ import { ShopList, ShopSearch, FeaturedShops } from './';
 import { Shop } from '@/types/shop';
 import { shopService } from '@/services/ShopService';
 import { Button } from '@/components/ui/button';
-import { Store, Star, Users, Globe } from 'lucide-react';
+import { Store, Star, Users, Globe, ArrowLeft } from 'lucide-react';
+
+// Données de démonstration pour les boutiques
+const demoShops: Shop[] = [
+  {
+    id: 1,
+    name: "Artisanat Traditionnel Sénégalais",
+    slug: "artisanat-traditionnel-senegalais",
+    description: "Découvrez nos créations artisanales authentiques du Sénégal, des bijoux traditionnels aux objets de décoration.",
+    logoUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=200&fit=crop",
+    bannerUrl: "",
+    contactEmail: "contact@artisanat-senegal.com",
+    contactPhone: "+221 77 123 45 67",
+    address: "123 Rue de l'Artisanat",
+    city: "Dakar",
+    country: "Sénégal",
+    status: "ACTIVE" as any,
+    isVerified: true,
+    isFeatured: true,
+    rating: 4.8,
+    totalReviews: 156,
+    totalSales: 234,
+    createdAt: "2024-01-15",
+    updatedAt: "2024-01-15",
+    owner: {
+      id: 1,
+      email: "artisan@example.com",
+      firstName: "Mamadou",
+      lastName: "Diallo",
+      role: "SHOP_OWNER"
+    },
+    productCount: 45,
+    featuredProducts: []
+  },
+  {
+    id: 2,
+    name: "Bijoux Africains Élégance",
+    slug: "bijoux-africains-elegance",
+    description: "Collection exclusive de bijoux africains modernes et traditionnels, créés avec des matériaux nobles.",
+    logoUrl: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=300&h=200&fit=crop",
+    bannerUrl: "",
+    contactEmail: "info@bijoux-africains.com",
+    contactPhone: "+221 77 987 65 43",
+    address: "456 Avenue des Bijoux",
+    city: "Dakar",
+    country: "Sénégal",
+    status: "ACTIVE" as any,
+    isVerified: true,
+    isFeatured: false,
+    rating: 4.9,
+    totalReviews: 89,
+    totalSales: 167,
+    createdAt: "2024-02-20",
+    updatedAt: "2024-02-20",
+    owner: {
+      id: 2,
+      email: "bijoutier@example.com",
+      firstName: "Fatou",
+      lastName: "Ndiaye",
+      role: "SHOP_OWNER"
+    },
+    productCount: 32,
+    featuredProducts: []
+  },
+  {
+    id: 3,
+    name: "Mode Africaine Contemporaine",
+    slug: "mode-africaine-contemporaine",
+    description: "Vêtements modernes inspirés de la culture africaine, alliant tradition et contemporanéité.",
+    logoUrl: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300&h=200&fit=crop",
+    bannerUrl: "",
+    contactEmail: "contact@mode-africaine.com",
+    contactPhone: "+221 77 555 44 33",
+    address: "789 Boulevard de la Mode",
+    city: "Dakar",
+    country: "Sénégal",
+    status: "ACTIVE" as any,
+    isVerified: false,
+    isFeatured: true,
+    rating: 4.7,
+    totalReviews: 203,
+    totalSales: 445,
+    createdAt: "2024-03-10",
+    updatedAt: "2024-03-10",
+    owner: {
+      id: 3,
+      email: "mode@example.com",
+      firstName: "Aissatou",
+      lastName: "Ba",
+      role: "SHOP_OWNER"
+    },
+    productCount: 78,
+    featuredProducts: []
+  }
+];
 
 export const MarketplaceHome: React.FC = () => {
   const navigate = useNavigate();
@@ -24,11 +118,45 @@ export const MarketplaceHome: React.FC = () => {
 
   const loadStats = async () => {
     try {
-      const totalShops = await shopService.getActiveShopsCount();
-      const featuredShops = await shopService.getFeaturedShops();
-      const allShops = await shopService.getAllShops();
+      setIsLoading(true);
       
-      const totalProducts = allShops.reduce((sum, shop) => sum + shop.productCount, 0);
+      // Essayer d'abord l'API, puis utiliser les données de démonstration en fallback
+      let totalShops = demoShops.length;
+      let featuredShops = demoShops.filter(shop => shop.isFeatured);
+      let allShops = demoShops;
+
+      // Essayer de charger depuis l'API
+      try {
+        console.log('🔄 Tentative de chargement depuis l\'API...');
+        const apiTotalShops = await shopService.getActiveShopsCount();
+        totalShops = apiTotalShops;
+        console.log('✅ Nombre de boutiques chargé depuis l\'API:', apiTotalShops);
+      } catch (error) {
+        console.log('⚠️ Impossible de charger le nombre de boutiques depuis l\'API, utilisation des données de démonstration');
+        totalShops = demoShops.length;
+      }
+
+      try {
+        const apiFeaturedShops = await shopService.getFeaturedShops();
+        featuredShops = apiFeaturedShops;
+        console.log('✅ Boutiques mises en avant chargées depuis l\'API:', apiFeaturedShops.length);
+      } catch (error) {
+        console.log('⚠️ Impossible de charger les boutiques mises en avant depuis l\'API, utilisation des données de démonstration');
+        featuredShops = demoShops.filter(shop => shop.isFeatured);
+      }
+
+      try {
+        const apiAllShops = await shopService.getAllShops();
+        allShops = apiAllShops;
+        setShops(apiAllShops);
+        console.log('✅ Toutes les boutiques chargées depuis l\'API:', apiAllShops.length);
+      } catch (error) {
+        console.log('⚠️ Impossible de charger toutes les boutiques depuis l\'API, utilisation des données de démonstration');
+        allShops = demoShops;
+        setShops(demoShops);
+      }
+      
+      const totalProducts = allShops.reduce((sum, shop) => sum + (shop.productCount || 0), 0);
       const countries = new Set(allShops.map(shop => shop.country)).size;
 
       setStats({
@@ -37,8 +165,26 @@ export const MarketplaceHome: React.FC = () => {
         totalProducts,
         countries
       });
+      
+      console.log('📊 Statistiques finales:', {
+        totalShops,
+        featuredShops: featuredShops.length,
+        totalProducts,
+        countries
+      });
+      
     } catch (error) {
-      console.error('Erreur lors du chargement des statistiques:', error);
+      console.error('❌ Erreur lors du chargement des statistiques:', error);
+      // Utiliser des valeurs par défaut en cas d'erreur totale
+      setStats({
+        totalShops: demoShops.length,
+        featuredShops: demoShops.filter(shop => shop.isFeatured).length,
+        totalProducts: demoShops.reduce((sum, shop) => sum + (shop.productCount || 0), 0),
+        countries: new Set(demoShops.map(shop => shop.country)).size
+      });
+      setShops(demoShops);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -52,33 +198,48 @@ export const MarketplaceHome: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-amber-50">
+    <div className="min-h-screen bg-gradient-to-b from-african-gold-600 to-amber-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-orange-500 to-amber-600 text-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Découvrez les Artisans Africains
-          </h1>
-          <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
-            Explorez notre marketplace et connectez-vous avec des artisans talentueux 
-            du continent africain. Des produits uniques et authentiques vous attendent.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+      <div className="bg-gradient-to-r from-white to-amber-200 text-white py-16">
+        <div className="container mx-auto px-4">
+          {/* Bouton de retour à l'accueil */}
+          <div className="mb-8">
             <Button 
-              size="lg" 
-              variant="secondary"
-              className="text-orange-600 hover:text-orange-700"
-              onClick={() => navigate('/create-shop')}
-            >
-              Créer ma boutique
-            </Button>
-            <Button 
-              size="lg" 
               variant="outline"
-              className="border-white text-white hover:bg-white hover:text-orange-600"
+              size="sm"
+              className="border-white text-african-gold-600 hover:bg-white hover:text-orange-600"
+              onClick={() => navigate('/')}
             >
-              En savoir plus
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Retour à l'accueil
             </Button>
+          </div>
+          
+          <div className="text-center">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-african-gold-600">
+              Découvrez les Artisans Africains
+            </h1>
+            <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-black">
+              Explorez notre marketplace et connectez-vous avec des artisans talentueux 
+              du continent africain. Des produits uniques et authentiques vous attendent.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button 
+                size="lg" 
+                variant="secondary"
+                className="text-african-gold-600 hover:text-orange-700"
+                onClick={() => navigate('/create-shop')}
+              >
+                Créer ma boutique
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="border-white text-white hover:bg-white hover:text-orange-600"
+              >
+                En savoir plus
+              </Button>
+            </div>
           </div>
         </div>
       </div>

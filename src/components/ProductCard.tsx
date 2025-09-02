@@ -14,7 +14,7 @@ interface ProductCardProps {
   rating: number;
   reviewCount: number;
   imageUrl: string;
-  category: string;
+  category: string | { id: string; name: string };
   skinType?: string[];
   isNew?: boolean;
   isBestSeller?: boolean;
@@ -49,7 +49,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         price,
         image: imageUrl,
         origin: 'Sénégal',
-        category,
+        category: typeof category === 'string' ? category : category?.name || '',
         available: true
       },
       quantity: 1
@@ -124,7 +124,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
       <CardContent className="p-4">
         {/* Category */}
-        <p className="text-sm text-orange-600 font-medium mb-1">{category}</p>
+        <p className="text-sm text-orange-600 font-medium mb-1">
+          {typeof category === 'string' ? category : category?.name}
+        </p>
 
         {/* Product name */}
         <h3 className="font-semibold text-gray-800 mb-2 line-clamp-2 group-hover:text-orange-600 transition-colors">

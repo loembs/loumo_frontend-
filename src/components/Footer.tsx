@@ -83,7 +83,6 @@ const Footer = () => {
                   { name: 'Accueil', href: '/' },
                   { name: 'Produits', href: '/products' },
                   { name: 'Box Beauté', href: '/boxes' },
-                  { name: 'Tutos & Conseils', href: '/tutorials' },
                   { name: 'À propos', href: '/about' },
                   { name: 'Contact', href: '/contact' }
                 ].map((link) => (
@@ -158,29 +157,29 @@ const Footer = () => {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6">
-              <p className="text-african-earth-400 text-sm">
+              <p className="text-white text-sm">
                 © 2024 Natura Afrika. Tous droits réservés.
               </p>
               <div className="flex space-x-4 text-sm">
-                <Link to="/privacy" className="text-african-earth-400 hover:text-african-gold-300">
+                <Link to="/privacy" className="text-white hover:text-african-gold-300 transition-colors">
                   Confidentialité
                 </Link>
-                <Link to="/terms" className="text-african-earth-400 hover:text-african-gold-300">
+                <Link to="/terms" className="text-white hover:text-african-gold-300 transition-colors">
                   CGV
                 </Link>
-                <Link to="/cookies" className="text-african-earth-400 hover:text-african-gold-300">
+                <Link to="/cookies" className="text-white hover:text-african-gold-300 transition-colors">
                   Cookies
                 </Link>
               </div>
             </div>
             
             {/* Admin login link */}
-            <Link 
+            {/* <Link 
               to="/admin" 
-              className="text-african-earth-500 hover:text-african-gold-400 text-xs transition-colors"
+              className="text-white hover:text-african-gold-400 text-xs transition-colors"
             >
               Connexion Admin
-            </Link>
+            </Link> */}
           </div>
         </div>
       </div>

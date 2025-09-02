@@ -6,6 +6,100 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { shopService } from '@/services/ShopService';
 import { Shop } from '@/types/shop';
 
+// Données de démonstration pour toutes les boutiques
+const demoAllShops: Shop[] = [
+  {
+    id: 1,
+    name: "Artisanat Traditionnel Sénégalais",
+    slug: "artisanat-traditionnel-senegalais",
+    description: "Découvrez nos créations artisanales authentiques du Sénégal, des bijoux traditionnels aux objets de décoration.",
+    logoUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=200&fit=crop",
+    bannerUrl: "",
+    contactEmail: "contact@artisanat-senegal.com",
+    contactPhone: "+221 77 123 45 67",
+    address: "123 Rue de l'Artisanat",
+    city: "Dakar",
+    country: "Sénégal",
+    status: "ACTIVE" as any,
+    isVerified: true,
+    isFeatured: true,
+    rating: 4.8,
+    totalReviews: 156,
+    totalSales: 234,
+    createdAt: "2024-01-15",
+    updatedAt: "2024-01-15",
+    owner: {
+      id: 1,
+      email: "artisan@example.com",
+      firstName: "Mamadou",
+      lastName: "Diallo",
+      role: "SHOP_OWNER"
+    },
+    productCount: 45,
+    featuredProducts: []
+  },
+  {
+    id: 2,
+    name: "Bijoux Africains Élégance",
+    slug: "bijoux-africains-elegance",
+    description: "Collection exclusive de bijoux africains modernes et traditionnels, créés avec des matériaux nobles.",
+    logoUrl: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=300&h=200&fit=crop",
+    bannerUrl: "",
+    contactEmail: "info@bijoux-africains.com",
+    contactPhone: "+221 77 987 65 43",
+    address: "456 Avenue des Bijoux",
+    city: "Dakar",
+    country: "Sénégal",
+    status: "ACTIVE" as any,
+    isVerified: true,
+    isFeatured: false,
+    rating: 4.9,
+    totalReviews: 89,
+    totalSales: 167,
+    createdAt: "2024-02-20",
+    updatedAt: "2024-02-20",
+    owner: {
+      id: 2,
+      email: "bijoutier@example.com",
+      firstName: "Fatou",
+      lastName: "Ndiaye",
+      role: "SHOP_OWNER"
+    },
+    productCount: 32,
+    featuredProducts: []
+  },
+  {
+    id: 3,
+    name: "Mode Africaine Contemporaine",
+    slug: "mode-africaine-contemporaine",
+    description: "Vêtements modernes inspirés de la culture africaine, alliant tradition et contemporanéité.",
+    logoUrl: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300&h=200&fit=crop",
+    bannerUrl: "",
+    contactEmail: "contact@mode-africaine.com",
+    contactPhone: "+221 77 555 44 33",
+    address: "789 Boulevard de la Mode",
+    city: "Dakar",
+    country: "Sénégal",
+    status: "ACTIVE" as any,
+    isVerified: false,
+    isFeatured: true,
+    rating: 4.7,
+    totalReviews: 203,
+    totalSales: 445,
+    createdAt: "2024-03-10",
+    updatedAt: "2024-03-10",
+    owner: {
+      id: 3,
+      email: "mode@example.com",
+      firstName: "Aissatou",
+      lastName: "Ba",
+      role: "SHOP_OWNER"
+    },
+    productCount: 78,
+    featuredProducts: []
+  }
+];
+
 interface ShopSearchProps {
   onSearchResults: (shops: Shop[]) => void;
   onLoadingChange: (loading: boolean) => void;
@@ -13,7 +107,7 @@ interface ShopSearchProps {
 
 export const ShopSearch: React.FC<ShopSearchProps> = ({ onSearchResults, onLoadingChange }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [country, setCountry] = useState('');
+  const [country, setCountry] = useState('all');
   const [sortBy, setSortBy] = useState('name');
   const [isSearching, setIsSearching] = useState(false);
 
@@ -23,7 +117,7 @@ export const ShopSearch: React.FC<ShopSearchProps> = ({ onSearchResults, onLoadi
   ];
 
   const handleSearch = async () => {
-    if (!searchTerm.trim() && !country) {
+    if (!searchTerm.trim() && (!country || country === 'all')) {
       // Si pas de critères, charger toutes les boutiques
       await loadAllShops();
       return;
@@ -35,14 +129,43 @@ export const ShopSearch: React.FC<ShopSearchProps> = ({ onSearchResults, onLoadi
     try {
       let shops: Shop[] = [];
 
+      // Essayer d'abord l'API, puis utiliser les données de démonstration en fallback
       if (searchTerm.trim()) {
-        shops = await shopService.searchShops(searchTerm);
+        try {
+          console.log('🔄 Recherche de boutiques via API...');
+          shops = await shopService.searchShops(searchTerm);
+          console.log('✅ Recherche API réussie:', shops.length, 'résultats');
+        } catch (error) {
+          console.log('⚠️ Recherche API échouée, utilisation de toutes les boutiques pour filtrage local');
+          try {
+            shops = await shopService.getAllShops();
+          } catch (error2) {
+            console.log('⚠️ Impossible de charger toutes les boutiques depuis l\'API, utilisation des données de démonstration');
+            shops = demoAllShops;
+          }
+        }
       } else {
-        shops = await shopService.getAllShops();
+        try {
+          console.log('🔄 Chargement de toutes les boutiques via API...');
+          shops = await shopService.getAllShops();
+          console.log('✅ Chargement API réussi:', shops.length, 'boutiques');
+        } catch (error) {
+          console.log('⚠️ Impossible de charger toutes les boutiques depuis l\'API, utilisation des données de démonstration');
+          shops = demoAllShops;
+        }
+      }
+
+      // Recherche locale si nécessaire
+      if (searchTerm.trim() && shops === demoAllShops) {
+        shops = shops.filter(shop => 
+          shop.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          shop.description.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        console.log('🔍 Recherche locale effectuée:', shops.length, 'résultats');
       }
 
       // Filtrer par pays si sélectionné
-      if (country) {
+      if (country && country !== 'all') {
         shops = shops.filter(shop => shop.country === country);
       }
 
@@ -51,7 +174,7 @@ export const ShopSearch: React.FC<ShopSearchProps> = ({ onSearchResults, onLoadi
 
       onSearchResults(shops);
     } catch (error) {
-      console.error('Erreur lors de la recherche:', error);
+      console.error('❌ Erreur lors de la recherche:', error);
       onSearchResults([]);
     } finally {
       setIsSearching(false);
@@ -64,11 +187,21 @@ export const ShopSearch: React.FC<ShopSearchProps> = ({ onSearchResults, onLoadi
     onLoadingChange(true);
 
     try {
-      const shops = await shopService.getAllShops();
+      let shops: Shop[] = [];
+      
+      try {
+        console.log('🔄 Chargement de toutes les boutiques via API...');
+        shops = await shopService.getAllShops();
+        console.log('✅ Chargement API réussi:', shops.length, 'boutiques');
+      } catch (error) {
+        console.log('⚠️ Impossible de charger toutes les boutiques depuis l\'API, utilisation des données de démonstration');
+        shops = demoAllShops;
+      }
+      
       const sortedShops = sortShops(shops, sortBy);
       onSearchResults(sortedShops);
     } catch (error) {
-      console.error('Erreur lors du chargement:', error);
+      console.error('❌ Erreur lors du chargement:', error);
       onSearchResults([]);
     } finally {
       setIsSearching(false);
@@ -82,11 +215,11 @@ export const ShopSearch: React.FC<ShopSearchProps> = ({ onSearchResults, onLoadi
         case 'name':
           return a.name.localeCompare(b.name);
         case 'rating':
-          return b.rating - a.rating;
+          return (b.rating || 0) - (a.rating || 0);
         case 'sales':
-          return b.totalSales - a.totalSales;
+          return (b.totalSales || 0) - (a.totalSales || 0);
         case 'newest':
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
         default:
           return 0;
       }
@@ -130,7 +263,7 @@ export const ShopSearch: React.FC<ShopSearchProps> = ({ onSearchResults, onLoadi
               <SelectValue placeholder="Tous les pays" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Tous les pays</SelectItem>
+              <SelectItem value="all">Tous les pays</SelectItem>
               {countries.map((countryName) => (
                 <SelectItem key={countryName} value={countryName}>
                   {countryName}

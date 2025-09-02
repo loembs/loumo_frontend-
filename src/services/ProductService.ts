@@ -31,7 +31,10 @@ export class ProductService {
         return this.filterProducts(cached.products, params);
       }
       
-      return [];
+      // 4. Fallback final: données locales
+      console.log('🔄 Utilisation des données de fallback locales');
+      const fallbackProducts = this.getFallbackProducts();
+      return this.filterProducts(fallbackProducts, params);
     }
   }
 
@@ -55,14 +58,86 @@ export class ProductService {
     ProductCacheService.clearCache();
   }
 
+  // Données de fallback en cas d'échec complet de l'API
+  private static getFallbackProducts(): Product[] {
+    return [
+      {
+        id: "1",
+        name: "Boubou Traditionnel",
+        description: "Boubou élégant en tissu wax authentique",
+        price: 25000,
+        category: { id: "1", name: "Boubous" },
+        imageUrl: "/placeholder.svg",
+        stock: 10,
+        available: true
+      },
+      {
+        id: "2",
+        name: "Collier en Perles",
+        description: "Collier traditionnel en perles colorées",
+        price: 15000,
+        category: { id: "2", name: "Bijoux" },
+        imageUrl: "/placeholder.svg",
+        stock: 5,
+        available: true
+      },
+      {
+        id: "3",
+        name: "Robe Moderne",
+        description: "Robe contemporaine inspirée des traditions",
+        price: 35000,
+        category: { id: "3", name: "Prêt-à-porter" },
+        imageUrl: "/placeholder.svg",
+        stock: 8,
+        available: true
+      }
+    ];
+  }
+
   private static async fetchProductsFromAPI(): Promise<Product[]> {
-    const response = await fetch(`${API_BASE_URL}${ENDPOINTS.PRODUCTS.ALL}`);
-    if (!response.ok) {
-      throw new Error('Erreur lors du chargement des produits');
+    try {
+      console.log('🔄 Tentative de chargement depuis l\'API:', `${API_BASE_URL}${ENDPOINTS.PRODUCTS.ALL}`);
+      
+      const response = await fetch(`${API_BASE_URL}${ENDPOINTS.PRODUCTS.ALL}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // Timeout simple de 15 secondes
+        signal: AbortSignal.timeout(15000)
+      });
+      
+      if (!response.ok) {
+        console.error('❌ Erreur API:', response.status, response.statusText);
+        
+        if (response.status === 503) {
+          throw new Error('Service temporairement indisponible. Veuillez réessayer plus tard.');
+        }
+        
+        throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      const products: Product[] = data.data || data; // Gérer les deux formats de réponse
+      
+      console.log('✅ Produits chargés depuis l\'API:', products.length);
+      return products;
+      
+    } catch (error) {
+      console.error('❌ Erreur lors du chargement des produits:', error);
+      
+      // Gestion spécifique des erreurs CORS et de connectivité
+      if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+        throw new Error('Impossible de se connecter au serveur. Vérifiez votre connexion internet.');
+      }
+      
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error('Délai d\'attente dépassé. Le serveur met trop de temps à répondre.');
+      }
+      
+      // Relancer l'erreur pour la gestion dans getProducts
+      throw error;
     }
-    
-    const products: Product[] = await response.json();
-    return products;
   }
 
   private static filterProducts(products: Product[], params?: ProductSearchParams): Product[] {

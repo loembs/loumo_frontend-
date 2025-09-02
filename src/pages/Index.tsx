@@ -4,6 +4,8 @@ import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import FeaturedProducts from '@/components/FeaturedProducts';
 import Footer from '@/components/Footer';
+import { MarketplaceHome } from '@/components/marketplace/MarketplaceHome';
+import { FeaturedShops } from '@/components/marketplace/FeaturedShops';
 
 const Index = () => {
   return (
@@ -12,7 +14,8 @@ const Index = () => {
       <main>
         <HeroSection />
         <FeaturedProducts />
-
+        <MarketplaceHome />
+        <FeaturedShops />
         {/* Values section */}
       </main>
       <Footer />
