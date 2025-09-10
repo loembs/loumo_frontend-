@@ -21,6 +21,12 @@ export const ENDPOINTS = {
     BY_ID: '/orders/:id',
     UPDATE_STATUS: '/orders/:id/status',
     STATISTICS: '/orders/admin/statistics'
+  },
+  ADMIN: {
+    CREATE: '/audit/create-user',
+  },
+  SHOP:{
+    SEARCH : '/search'
   }
 };
 

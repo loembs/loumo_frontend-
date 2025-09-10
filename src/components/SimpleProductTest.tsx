@@ -17,7 +17,6 @@ export const SimpleProductTest: React.FC = () => {
             {isLoading ? 'Chargement...' : 'Recharger'}
           </Button>
         </div>
-
         {error && (
           <div className="p-3 bg-red-50 border border-red-200 rounded-md">
             <p className="text-red-800">Erreur: {error}</p>

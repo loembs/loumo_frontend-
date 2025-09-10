@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Package, 
@@ -11,14 +12,17 @@ import {
   Calendar,
   Eye,
   Edit,
-  Plus
+  Plus,
+  ArrowLeft
 } from 'lucide-react';
 import { orderService, Order, OrderStatistics } from '@/services/OrderService';
 import { OrderList } from './OrderList';
 import { OrderDetails } from './OrderDetails';
 import { AddProductForm } from './AddProductForm';
+import { ShopManagement } from './ShopManagement';
 
 export const AdminDashboard: React.FC = () => {
+  const navigate = useNavigate();
   const [statistics, setStatistics] = useState<OrderStatistics | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -93,6 +97,17 @@ export const AdminDashboard: React.FC = () => {
     <div className="container mx-auto p-6 space-y-6">
       {/* En-tête */}
       <div className="flex justify-between items-center">
+      <div className="mb-8">
+            <Button 
+              variant="outline"
+              size="sm"
+              className="border-white text-african-gold-600 hover:bg-white hover:text-orange-600"
+              onClick={() => navigate('/')}
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Retour à l'accueil
+            </Button>
+          </div>
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Dashboard Administrateur</h1>
           <p className="text-gray-600">Gérez vos commandes et produits</p>
@@ -110,7 +125,7 @@ export const AdminDashboard: React.FC = () => {
           <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
           <TabsTrigger value="orders">Commandes</TabsTrigger>
           <TabsTrigger value="products">Produits</TabsTrigger>
-          <TabsTrigger value="add-product">Ajouter produit</TabsTrigger>
+          <TabsTrigger value="shops">Boutiques</TabsTrigger>
         </TabsList>
 
         {/* Vue d'ensemble */}
@@ -266,6 +281,11 @@ export const AdminDashboard: React.FC = () => {
         {/* Ajouter un produit */}
         <TabsContent value="add-product" className="space-y-6">
           <AddProductForm />
+        </TabsContent>
+
+        {/* Gestion des boutiques */}
+        <TabsContent value="shops" className="space-y-6">
+          <ShopManagement />
         </TabsContent>
       </Tabs>
     </div>

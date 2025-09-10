@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import CreateAdminForm from './CreateAdminForm';
 
 const Footer = () => {
   return (
@@ -173,13 +174,8 @@ const Footer = () => {
               </div>
             </div>
             
-            {/* Admin login link */}
-            {/* <Link 
-              to="/admin" 
-              className="text-white hover:text-african-gold-400 text-xs transition-colors"
-            >
-              Connexion Admin
-            </Link> */}
+            {/* Admin creation form */}
+            <CreateAdminForm />
           </div>
         </div>
       </div>

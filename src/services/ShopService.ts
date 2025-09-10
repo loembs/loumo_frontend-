@@ -106,6 +106,50 @@ export class ShopService {
   async getActiveShopsCount(): Promise<number> {
     return this.request<number>('/stats/count');
   }
+
+  // === NOUVELLES MÉTHODES ADMIN ===
+
+  // Obtenir toutes les boutiques (tous statuts) pour l'admin
+  async getAllShopsForAdmin(): Promise<Shop[]> {
+    return this.request<Shop[]>('/admin');
+  }
+
+  // Valider une boutique
+  async validateShop(shopId: number): Promise<Shop> {
+    return this.request<Shop>(`/admin/${shopId}/validate`, {
+      method: 'PUT',
+    });
+  }
+
+  // Rejeter une boutique
+  async rejectShop(shopId: number, reason?: string): Promise<Shop> {
+    const url = reason 
+      ? `/admin/${shopId}/reject?reason=${encodeURIComponent(reason)}`
+      : `/admin/${shopId}/reject`;
+    
+    return this.request<Shop>(url, {
+      method: 'PUT',
+    });
+  }
+
+  // Mettre en avant/retirer de la mise en avant
+  async toggleFeaturedShop(shopId: number, featured: boolean): Promise<Shop> {
+    return this.request<Shop>(`/admin/${shopId}/feature?featured=${featured}`, {
+      method: 'PUT',
+    });
+  }
+
+  // Supprimer une boutique
+  async deleteShop(shopId: number): Promise<void> {
+    return this.request<void>(`/admin/${shopId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Obtenir les statistiques des boutiques pour l'admin
+  async getAdminShopStats(): Promise<any> {
+    return this.request<any>('/admin/stats');
+  }
 }
 
 export const shopService = ShopService.getInstance();
