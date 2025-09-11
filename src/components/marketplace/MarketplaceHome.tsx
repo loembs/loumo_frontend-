@@ -114,13 +114,6 @@ export const MarketplaceHome: React.FC = () => {
               >
                 Créer ma boutique
               </Button>
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="border-white text-white hover:bg-white hover:text-orange-600"
-              >
-                En savoir plus
-              </Button>
             </div>
           </div>
         </div>
