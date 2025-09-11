@@ -1,15 +1,39 @@
-import React from 'react';
+import React,{ useState, useEffect } from 'react';
 import { ShopCard } from './ShopCard';
 import { Shop } from '@/types/shop';
 import { Loader2 } from 'lucide-react';
+import { shopService } from '@/services/ShopService';
+import { Button } from '@/components/ui/button';
 
 interface ShopListProps {
   shops: Shop[];
   isLoading?: boolean;
   error?: string;
+  className?: string;
 }
 
-export const ShopList: React.FC<ShopListProps> = ({ shops, isLoading, error }) => {
+export const ShopList: React.FC<ShopListProps> = ({ className }) => {
+  const [shops, setShops] = useState<Shop[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadShops();
+  }, []);
+
+  const loadShops = async () => {
+    try {
+      setIsLoading(true);
+      const allShops = await shopService.getAllShopsForAdmin();
+      setShops(allShops);
+      setError(null);
+    } catch (error) {
+      setError('Erreur lors du chargement des boutiques');
+      console.error('Erreur:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   if (isLoading) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -23,12 +47,7 @@ export const ShopList: React.FC<ShopListProps> = ({ shops, isLoading, error }) =
     return (
       <div className="text-center py-12">
         <p className="text-red-500 mb-4">{error}</p>
-        <button 
-          onClick={() => window.location.reload()} 
-          className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
-        >
-          Réessayer
-        </button>
+        <Button onClick={loadShops}>Réessayer</Button>
       </div>
     );
   }
