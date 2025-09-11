@@ -22,7 +22,8 @@ export class ShopService {
     };
 
     try {
-      const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      const url = `${this.baseUrl}${endpoint}`;
+      const response = await fetch(url, {
         ...options,
         headers,
       });
@@ -46,13 +47,27 @@ export class ShopService {
           
           throw new Error('Authentification requise');
         }
-        
-        const error = await response.json();
-        throw new Error(error.message || 'Erreur lors de la requête');
+        // Lire le corps (json ou texte) pour debug et message
+        let errorMessage = 'Erreur lors de la requête';
+        try {
+          const text = await response.text();
+          try {
+            const errJson = JSON.parse(text);
+            errorMessage = errJson.message || errorMessage;
+            console.error('❌ Requête échouée', { url, status: response.status, body: errJson });
+          } catch {
+            errorMessage = text || errorMessage;
+            console.error('❌ Requête échouée (texte)', { url, status: response.status, body: text });
+          }
+        } catch (e) {
+          console.error('❌ Requête échouée (pas de corps)', { url, status: response.status });
+        }
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
-      return data.data;
+      // Tolérer différents wrappers: RestResponseWeb {data}, ou data direct
+      return (data && typeof data === 'object' && 'data' in data) ? data.data : data;
     } catch (error) {
       // Si c'est une erreur d'authentification, la relancer
       if (error instanceof Error && error.message === 'Authentification requise') {
@@ -74,7 +89,8 @@ export class ShopService {
     };
 
     try {
-      const response = await fetch(`${this.adminBaseUrl}${endpoint}`, {
+      const url = `${this.adminBaseUrl}${endpoint}`;
+      const response = await fetch(url, {
         ...options,
         headers,
       });
@@ -93,12 +109,25 @@ export class ShopService {
           throw new Error('Authentification requise');
         }
 
-        const error = await response.json();
-        throw new Error(error.message || 'Erreur lors de la requête');
+        let errorMessage = 'Erreur lors de la requête';
+        try {
+          const text = await response.text();
+          try {
+            const errJson = JSON.parse(text);
+            errorMessage = errJson.message || errorMessage;
+            console.error('❌ Requête admin échouée', { url, status: response.status, body: errJson });
+          } catch {
+            errorMessage = text || errorMessage;
+            console.error('❌ Requête admin échouée (texte)', { url, status: response.status, body: text });
+          }
+        } catch (e) {
+          console.error('❌ Requête admin échouée (pas de corps)', { url, status: response.status });
+        }
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
-      return data.data;
+      return (data && typeof data === 'object' && 'data' in data) ? data.data : data;
     } catch (error) {
       if (error instanceof Error && error.message === 'Authentification requise') {
         throw error;

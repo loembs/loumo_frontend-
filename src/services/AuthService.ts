@@ -1,6 +1,8 @@
 import { User, AuthResponse } from '@/types/auth';
+import { API_BASE_URL as ROOT_API_BASE_URL } from '@/config/constants';
 
-const API_BASE_URL = 'https://back-lomou.onrender.com/api/auth';
+// Utiliser la base API centralisée et construire le chemin auth
+const API_BASE_URL = `${ROOT_API_BASE_URL}/auth`;
 const IS_PRODUCTION = import.meta.env.PROD;
 
 export class AuthService {
