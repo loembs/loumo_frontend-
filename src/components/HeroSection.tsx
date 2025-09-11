@@ -266,7 +266,7 @@ const HeroSection = () => {
             <div className="relative animate-slide-up">
               <div className="relative z-10 bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 transform rotate-1 hover:rotate-0 transition-transform duration-500 border border-african-gold-100">
                 <div className="text-center mb-6">
-                  <h3 className="text-2xl font-bold text-gray-800 mb-2">Produit Vedette</h3>
+
                   <p className="text-gray-600">Découvrez nos créations les plus populaires</p>
                 </div>
                 

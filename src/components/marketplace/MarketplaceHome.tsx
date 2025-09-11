@@ -126,39 +126,7 @@ export const MarketplaceHome: React.FC = () => {
         </div>
       </div>
 
-      {/* Statistiques */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          <div className="text-center">
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <Store className="h-8 w-8 text-orange-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-900">{stats.totalShops}</div>
-              <div className="text-sm text-gray-600">Boutiques actives</div>
-            </div>
-          </div>
-          <div className="text-center">
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <Star className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-900">{stats.featuredShops}</div>
-              <div className="text-sm text-gray-600">Boutiques mises en avant</div>
-            </div>
-          </div>
-          <div className="text-center">
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <Users className="h-8 w-8 text-blue-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-900">{stats.totalProducts}</div>
-              <div className="text-sm text-gray-600">Produits disponibles</div>
-            </div>
-          </div>
-          <div className="text-center">
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <Globe className="h-8 w-8 text-green-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-900">{stats.countries}</div>
-              <div className="text-sm text-gray-600">Pays représentés</div>
-            </div>
-          </div>
-        </div>
-      </div>
+      
 
       {/* Boutiques mises en avant */}
       <div className="container mx-auto px-4 py-12">
