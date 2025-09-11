@@ -24,7 +24,7 @@ export const ShopList: React.FC<ShopListProps> = ({ className }) => {
   const loadShops = async () => {
     try {
       setIsLoading(true);
-      const allShops = await shopService.getAllShopsForAdmin();
+      const allShops = await shopService.getAllShops();
       setShops(allShops);
       setError(null);
     } catch (error) {
