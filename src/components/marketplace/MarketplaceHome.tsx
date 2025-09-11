@@ -126,13 +126,6 @@ export const MarketplaceHome: React.FC = () => {
         </div>
       </div>
 
-      
-
-      {/* Boutiques mises en avant */}
-      <div className="container mx-auto px-4 py-12">
-        <h2 className="text-3xl font-bold text-center mb-8">Boutiques mises en avant</h2>
-        <FeaturedShops />
-      </div>
 
       {/* Recherche et liste des boutiques */}
       <div className="container mx-auto px-4 py-12">
