@@ -5,69 +5,7 @@ import { shopService } from '@/services/ShopService';
 import { Loader2, ChevronLeft, ChevronRight, Store } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-// Données de démonstration pour les boutiques mises en avant
-const demoFeaturedShops: Shop[] = [
-  {
-    id: 1,
-    name: "Artisanat Traditionnel Sénégalais",
-    slug: "artisanat-traditionnel-senegalais",
-    description: "Découvrez nos créations artisanales authentiques du Sénégal, des bijoux traditionnels aux objets de décoration.",
-    logoUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=200&fit=crop",
-    bannerUrl: "",
-    contactEmail: "contact@artisanat-senegal.com",
-    contactPhone: "+221 77 123 45 67",
-    address: "123 Rue de l'Artisanat",
-    city: "Dakar",
-    country: "Sénégal",
-    status: "ACTIVE" as any,
-    isVerified: true,
-    isFeatured: true,
-    rating: 4.8,
-    totalReviews: 156,
-    totalSales: 234,
-    createdAt: "2024-01-15",
-    updatedAt: "2024-01-15",
-    owner: {
-      id: 1,
-      email: "artisan@example.com",
-      firstName: "Mamadou",
-      lastName: "Diallo",
-      role: "SHOP_OWNER"
-    },
-    productCount: 45,
-    featuredProducts: []
-  },
-  {
-    id: 3,
-    name: "Mode Africaine Contemporaine",
-    slug: "mode-africaine-contemporaine",
-    description: "Vêtements modernes inspirés de la culture africaine, alliant tradition et contemporanéité.",
-    logoUrl: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300&h=200&fit=crop",
-    bannerUrl: "",
-    contactEmail: "contact@mode-africaine.com",
-    contactPhone: "+221 77 555 44 33",
-    address: "789 Boulevard de la Mode",
-    city: "Dakar",
-    country: "Sénégal",
-    status: "ACTIVE" as any,
-    isVerified: false,
-    isFeatured: true,
-    rating: 4.7,
-    totalReviews: 203,
-    totalSales: 445,
-    createdAt: "2024-03-10",
-    updatedAt: "2024-03-10",
-    owner: {
-      id: 3,
-      email: "mode@example.com",
-      firstName: "Aissatou",
-      lastName: "Ba",
-      role: "SHOP_OWNER"
-    },
-    productCount: 78,
-    featuredProducts: []
-  }
-];
+// Plus de données de démonstration: chargement uniquement depuis le backend
 
 export const FeaturedShops: React.FC = () => {
   const [featuredShops, setFeaturedShops] = useState<Shop[]>([]);
@@ -82,19 +20,14 @@ export const FeaturedShops: React.FC = () => {
     try {
       setIsLoading(true);
       
-      // Essayer d'abord l'API, puis utiliser les données de démonstration en fallback
-      try {
-        console.log('🔄 Tentative de chargement des boutiques mises en avant depuis l\'API...');
-        const shops = await shopService.getFeaturedShops();
-        setFeaturedShops(shops);
-        console.log('✅ Boutiques mises en avant chargées depuis l\'API:', shops.length);
-      } catch (error) {
-        console.log('⚠️ Impossible de charger les boutiques mises en avant depuis l\'API, utilisation des données de démonstration');
-        setFeaturedShops(demoFeaturedShops);
-      }
+      // Charger uniquement depuis l'API
+      console.log('🔄 Chargement des boutiques mises en avant depuis le backend...');
+      const shops = await shopService.getFeaturedShops();
+      setFeaturedShops(shops);
+      console.log('✅ Boutiques mises en avant chargées:', shops.length);
     } catch (error) {
-      console.error('❌ Erreur lors du chargement des boutiques mises en avant:', error);
-      setFeaturedShops(demoFeaturedShops);
+      console.error('❌ Erreur lors du chargement des boutiques mises en avant (backend uniquement):', error);
+      setFeaturedShops([]);
     } finally {
       setIsLoading(false);
     }

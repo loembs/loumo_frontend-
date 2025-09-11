@@ -6,99 +6,7 @@ import { shopService } from '@/services/ShopService';
 import { Button } from '@/components/ui/button';
 import { Store, Star, Users, Globe, ArrowLeft } from 'lucide-react';
 
-// Données de démonstration pour les boutiques
-const demoShops: Shop[] = [
-  {
-    id: 1,
-    name: "Artisanat Traditionnel Sénégalais",
-    slug: "artisanat-traditionnel-senegalais",
-    description: "Découvrez nos créations artisanales authentiques du Sénégal, des bijoux traditionnels aux objets de décoration.",
-    logoUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=200&fit=crop",
-    bannerUrl: "",
-    contactEmail: "contact@artisanat-senegal.com",
-    contactPhone: "+221 77 123 45 67",
-    address: "123 Rue de l'Artisanat",
-    city: "Dakar",
-    country: "Sénégal",
-    status: "ACTIVE" as any,
-    isVerified: true,
-    isFeatured: true,
-    rating: 4.8,
-    totalReviews: 156,
-    totalSales: 234,
-    createdAt: "2024-01-15",
-    updatedAt: "2024-01-15",
-    owner: {
-      id: 1,
-      email: "artisan@example.com",
-      firstName: "Mamadou",
-      lastName: "Diallo",
-      role: "SHOP_OWNER"
-    },
-    productCount: 45,
-    featuredProducts: []
-  },
-  {
-    id: 2,
-    name: "Bijoux Africains Élégance",
-    slug: "bijoux-africains-elegance",
-    description: "Collection exclusive de bijoux africains modernes et traditionnels, créés avec des matériaux nobles.",
-    logoUrl: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=300&h=200&fit=crop",
-    bannerUrl: "",
-    contactEmail: "info@bijoux-africains.com",
-    contactPhone: "+221 77 987 65 43",
-    address: "456 Avenue des Bijoux",
-    city: "Dakar",
-    country: "Sénégal",
-    status: "ACTIVE" as any,
-    isVerified: true,
-    isFeatured: false,
-    rating: 4.9,
-    totalReviews: 89,
-    totalSales: 167,
-    createdAt: "2024-02-20",
-    updatedAt: "2024-02-20",
-    owner: {
-      id: 2,
-      email: "bijoutier@example.com",
-      firstName: "Fatou",
-      lastName: "Ndiaye",
-      role: "SHOP_OWNER"
-    },
-    productCount: 32,
-    featuredProducts: []
-  },
-  {
-    id: 3,
-    name: "Mode Africaine Contemporaine",
-    slug: "mode-africaine-contemporaine",
-    description: "Vêtements modernes inspirés de la culture africaine, alliant tradition et contemporanéité.",
-    logoUrl: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300&h=200&fit=crop",
-    bannerUrl: "",
-    contactEmail: "contact@mode-africaine.com",
-    contactPhone: "+221 77 555 44 33",
-    address: "789 Boulevard de la Mode",
-    city: "Dakar",
-    country: "Sénégal",
-    status: "ACTIVE" as any,
-    isVerified: false,
-    isFeatured: true,
-    rating: 4.7,
-    totalReviews: 203,
-    totalSales: 445,
-    createdAt: "2024-03-10",
-    updatedAt: "2024-03-10",
-    owner: {
-      id: 3,
-      email: "mode@example.com",
-      firstName: "Aissatou",
-      lastName: "Ba",
-      role: "SHOP_OWNER"
-    },
-    productCount: 78,
-    featuredProducts: []
-  }
-];
+// Plus de données de démonstration: la page charge uniquement depuis le backend
 
 export const MarketplaceHome: React.FC = () => {
   const navigate = useNavigate();
@@ -120,69 +28,43 @@ export const MarketplaceHome: React.FC = () => {
     try {
       setIsLoading(true);
       
-      // Essayer d'abord l'API, puis utiliser les données de démonstration en fallback
-      let totalShops = demoShops.length;
-      let featuredShops = demoShops.filter(shop => shop.isFeatured);
-      let allShops = demoShops;
+      // Charger exclusivement depuis l'API
+      console.log('🔄 Chargement des données...');
+      const [apiTotalShops, apiFeaturedShops, apiAllShops] = await Promise.all([
+        shopService.getActiveShopsCount(),
+        shopService.getFeaturedShops(),
+        shopService.getAllShops(),
+      ]);
 
-      // Essayer de charger depuis l'API
-      try {
-        console.log('🔄 Tentative de chargement depuis l\'API...');
-        const apiTotalShops = await shopService.getActiveShopsCount();
-        totalShops = apiTotalShops;
-        console.log('✅ Nombre de boutiques chargé depuis l\'API:', apiTotalShops);
-      } catch (error) {
-        console.log('⚠️ Impossible de charger le nombre de boutiques depuis l\'API, utilisation des données de démonstration');
-        totalShops = demoShops.length;
-      }
-
-      try {
-        const apiFeaturedShops = await shopService.getFeaturedShops();
-        featuredShops = apiFeaturedShops;
-        console.log('✅ Boutiques mises en avant chargées depuis l\'API:', apiFeaturedShops.length);
-      } catch (error) {
-        console.log('⚠️ Impossible de charger les boutiques mises en avant depuis l\'API, utilisation des données de démonstration');
-        featuredShops = demoShops.filter(shop => shop.isFeatured);
-      }
-
-      try {
-        const apiAllShops = await shopService.getAllShops();
-        allShops = apiAllShops;
-        setShops(apiAllShops);
-        console.log('✅ Toutes les boutiques chargées depuis l\'API:', apiAllShops.length);
-      } catch (error) {
-        console.log('⚠️ Impossible de charger toutes les boutiques depuis l\'API, utilisation des données de démonstration');
-        allShops = demoShops;
-        setShops(demoShops);
-      }
+      setShops(apiAllShops);
       
-      const totalProducts = allShops.reduce((sum, shop) => sum + (shop.productCount || 0), 0);
-      const countries = new Set(allShops.map(shop => shop.country)).size;
+      const totalProducts = apiAllShops.reduce((sum, shop) => sum + (shop.productCount || 0), 0);
+      const countries = new Set(apiAllShops.map(shop => shop.country)).size;
 
       setStats({
-        totalShops,
-        featuredShops: featuredShops.length,
+        totalShops: apiTotalShops,
+        featuredShops: apiFeaturedShops.length,
         totalProducts,
         countries
       });
       
       console.log('📊 Statistiques finales:', {
-        totalShops,
-        featuredShops: featuredShops.length,
+        totalShops: apiTotalShops,
+        featuredShops: apiFeaturedShops.length,
         totalProducts,
         countries
       });
       
     } catch (error) {
-      console.error('❌ Erreur lors du chargement des statistiques:', error);
-      // Utiliser des valeurs par défaut en cas d'erreur totale
+      console.error('❌ Erreur lors du chargement des statistiques (backend uniquement) :', error);
+      // En cas d'erreur, garder l'état vide mais ne pas injecter de données mock
       setStats({
-        totalShops: demoShops.length,
-        featuredShops: demoShops.filter(shop => shop.isFeatured).length,
-        totalProducts: demoShops.reduce((sum, shop) => sum + (shop.productCount || 0), 0),
-        countries: new Set(demoShops.map(shop => shop.country)).size
+        totalShops: 0,
+        featuredShops: 0,
+        totalProducts: 0,
+        countries: 0
       });
-      setShops(demoShops);
+      setShops([]);
     } finally {
       setIsLoading(false);
     }
