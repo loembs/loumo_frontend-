@@ -4,6 +4,7 @@ import { API_BASE_URL } from '@/config/constants';
 export class ShopService {
   private static instance: ShopService;
   private baseUrl = `${API_BASE_URL}/shops`;
+  private adminBaseUrl = `${API_BASE_URL}/admin/shops`;
 
   static getInstance(): ShopService {
     if (!ShopService.instance) {
@@ -64,6 +65,49 @@ export class ShopService {
     }
   }
 
+  private async requestAdmin<T>(endpoint: string, options?: RequestInit): Promise<T> {
+    const token = localStorage.getItem('token');
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` }),
+      ...options?.headers,
+    };
+
+    try {
+      const response = await fetch(`${this.adminBaseUrl}${endpoint}`, {
+        ...options,
+        headers,
+      });
+
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          console.log('🔐 Erreur d\'authentification détectée');
+          localStorage.removeItem('token');
+          const authErrorEvent = new CustomEvent('authError', {
+            detail: {
+              message: 'Veuillez vous connecter pour accéder à cette fonctionnalité',
+              redirectTo: '/login'
+            }
+          });
+          window.dispatchEvent(authErrorEvent);
+          throw new Error('Authentification requise');
+        }
+
+        const error = await response.json();
+        throw new Error(error.message || 'Erreur lors de la requête');
+      }
+
+      const data = await response.json();
+      return data.data;
+    } catch (error) {
+      if (error instanceof Error && error.message === 'Authentification requise') {
+        throw error;
+      }
+      console.error('❌ Erreur lors de la requête:', error);
+      throw error;
+    }
+  }
+
   // Créer une nouvelle boutique
   async createShop(shopData: CreateShopRequest): Promise<Shop> {
     return this.request<Shop>('', {
@@ -111,12 +155,12 @@ export class ShopService {
 
   // Obtenir toutes les boutiques (tous statuts) pour l'admin
   async getAllShopsForAdmin(): Promise<Shop[]> {
-    return this.request<Shop[]>('/admin');
+    return this.requestAdmin<Shop[]>('');
   }
 
   // Valider une boutique
   async validateShop(shopId: number): Promise<Shop> {
-    return this.request<Shop>(`/admin/${shopId}/validate`, {
+    return this.requestAdmin<Shop>(`/${shopId}/validate`, {
       method: 'PUT',
     });
   }
@@ -124,31 +168,31 @@ export class ShopService {
   // Rejeter une boutique
   async rejectShop(shopId: number, reason?: string): Promise<Shop> {
     const url = reason 
-      ? `/admin/${shopId}/reject?reason=${encodeURIComponent(reason)}`
-      : `/admin/${shopId}/reject`;
+      ? `/${shopId}/reject?reason=${encodeURIComponent(reason)}`
+      : `/${shopId}/reject`;
     
-    return this.request<Shop>(url, {
+    return this.requestAdmin<Shop>(url, {
       method: 'PUT',
     });
   }
 
   // Mettre en avant/retirer de la mise en avant
   async toggleFeaturedShop(shopId: number, featured: boolean): Promise<Shop> {
-    return this.request<Shop>(`/admin/${shopId}/feature?featured=${featured}`, {
+    return this.requestAdmin<Shop>(`/${shopId}/feature?featured=${featured}`, {
       method: 'PUT',
     });
   }
 
   // Supprimer une boutique
   async deleteShop(shopId: number): Promise<void> {
-    return this.request<void>(`/admin/${shopId}`, {
+    return this.requestAdmin<void>(`/${shopId}`, {
       method: 'DELETE',
     });
   }
 
   // Obtenir les statistiques des boutiques pour l'admin
   async getAdminShopStats(): Promise<any> {
-    return this.request<any>('/admin/stats');
+    return this.requestAdmin<any>('/stats');
   }
 }
 
